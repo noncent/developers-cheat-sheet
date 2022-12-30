@@ -1,8 +1,6 @@
 # A Cheatsheet, Everyday commands for developers
 
-```
 ### Drupal CMS
-```
 ---
 
 ```html
