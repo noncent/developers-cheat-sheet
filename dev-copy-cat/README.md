@@ -39,7 +39,7 @@ chown -R www-data: drupal && chmod -R 755 drupal && chmod -R 444 drupal/sites/de
 chown -R www-data: $(pwd) && chmod -R 755 $(pwd) && chmod -R 444 $(pwd)/sites/default/settings.php
 ```
 
-## MySQL Commands (import/export)
+## MySQL Commands
 ---
 
 ```html
@@ -215,9 +215,13 @@ zcat test.txt.gz
 <!-- Find / search in contents , will show example.pdf, etc. -->
 zgrep exa test.txt.gz
 
------------------------------------------------
+```
+
 $ TAR Commands
------------------------------------------------
+---
+
+`html
+
 <!-- Create tar archive files & folders -->
 tar -cvzf code.tar.gz ./code
 
