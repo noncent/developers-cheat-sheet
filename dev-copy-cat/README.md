@@ -252,6 +252,8 @@ tar --delete -f backup.tar.gz '/home/source/uploads'
 ## Linux
 ---
 
+```html
+
 <!-- Top 50 Linux Commands You Must Know as a Regular User -->
 
 <!-- ls - The most frequently used command in Linux to list directories -->
