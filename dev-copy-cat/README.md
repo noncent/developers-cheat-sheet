@@ -220,7 +220,7 @@ zgrep exa test.txt.gz
 ## TAR Commands
 ---
 
-`html
+```html
 
 <!-- Create tar archive files & folders -->
 tar -cvzf code.tar.gz ./code
