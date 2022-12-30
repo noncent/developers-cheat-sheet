@@ -217,7 +217,7 @@ zgrep exa test.txt.gz
 
 ```
 
-$ TAR Commands
+## TAR Commands
 ---
 
 `html
@@ -386,7 +386,7 @@ alias rmd="rm -r"
 ```
 
 
-$ Amazon Linux 2 PHP 8.1 installation
+## Amazon Linux 2 PHP 8.1 installation
 ---
 ```html
 <!-- Find all installed PHP versions in repo -->
