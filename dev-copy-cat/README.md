@@ -699,25 +699,8 @@ aws s3 cp ./dump-$(date +%Y%m%d%H%M%S).sql.gz s3://myaws-s3/backups/sqldump/
 ## GIT Commands
 ---
 
-```html
-<!-- How to download and apply patches -->
-curl -O https://www.drupal.org/files/issues/2022-02-14/log_level_ok_does_n-3263912-5.patch
-git apply log_level_ok_does_n-3263912-5.patch
-patch -p0 < log_level_ok_does_n-3263912-5.patch
-<!-- If patch command not found -->
-sudo yum install patch
-
-<!-- I want to delete all .DS_STORE files from everywhere in bucket -->
-aws s3 rm s3://myaws-s3/backups/ --recursive --exclude "*" --include "*.DS_Store" --dryrun
-
-<!-- --dryrun will execute the command but not in real, hence once changes are correct, run again -->
-aws s3 rm s3://myaws-s3/backups/ --recursive --exclude "*" --include "*.DS_Store"
-
-<!-- I want to sync my local images folder from S3 bucket folder -->
-aws s3 sync s3://myaws-s3/backups/images/ /var/www/html/www-site-com/web/images/
-
-<!-- Copying local sql dump backup on to s3 folder -->
-aws s3 cp ./dump-$(date +%Y%m%d%H%M%S).sql.gz s3://myaws-s3/backups/sqldump/
+```
+COMING SOON
 ```
 
 ## FFMPEG Commands
