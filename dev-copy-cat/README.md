@@ -724,4 +724,254 @@ openssl aes-256-cbc -a -salt -in secrets.txt -out secrets.txt.enc
 
 <!-- Decrypt: Use openssl to decrypt the file: -->
 openssl aes-256-cbc -d -a -in secrets.txt.enc -out secrets.txt.new
+
+<!-- Integrate Subresource Integrity Check -->
+openssl dgst -sha384 -binary README.md | openssl base64 -A
+```
+
+## Nginx Drupal settings
+---
+```html
+# -----------------------------------------------
+# Default server configuration www.example.com
+# -----------------------------------------------
+
+# Redirecting https://site.com to https://www.site.com
+server {
+    listen 8080;
+    server_name example.com;
+    #return 301 $scheme://www.$host$request_uri;
+    return 301 https://www.example.com$request_uri;
+}
+
+# Main server block
+server {
+    listen 8080 default_server;
+    listen [::]:8080 default_server;
+
+    # root folder path
+    root /var/www/html/www-example-com/web;
+
+    # Add index.php to the list if you are using PHP
+    index index.php index.html index.htm index.nginx-debian.html;
+
+    # server name
+    server_name www.example.com g65rteds43szmu.cloudfront.net;
+    #return 301 $scheme://www.example.com$request_uri;
+
+    # access and error log
+    access_log /var/log/www-example-com/access/access.log combined;
+    error_log /var/log/www-example-com/error/error.log;
+
+    # Setting a var for site name
+    set $mysite https://www.example.com;
+
+    # Removing trailing slash and 301 redirect
+    rewrite ^(.+)/+$ $mysite$1 permanent;
+
+    # Remove ?amp parameter
+    if ($args ~* "/?amp") {
+        return 301 https://$host$uri;
+    }
+
+    # general settings
+    charset UTF-8;
+    sendfile on;
+    tcp_nopush on;
+    server_tokens off;
+    autoindex on;
+    client_max_body_size 65M;
+    client_body_buffer_size 12k;
+    client_header_buffer_size 1k;
+    large_client_header_buffers 2 4k;
+
+    # gzip compression settings
+    gzip on;
+    gzip_disable "msie6";
+    gzip_vary on;
+    gzip_proxied expired no-cache no-store private auth;
+    gzip_comp_level 6;
+    gzip_buffers 16 8k;
+    gzip_http_version 1.1;
+    gzip_min_length 256;
+    gzip_types text/plain text/css text/xml text/javascript application/javascript application/x-javascript application/xml;
+
+    # Essential Security Headers
+    add_header X-XSS-Protection "1; mode=block";
+    add_header X-Frame-Options "SAMEORIGIN";
+    add_header X-Content-Type-Options nosniff;
+    add_header Referrer-Policy "strict-origin";
+    add_header Permissions-Policy "interest-cohort=()";
+    add_header Strict-Transport-Security "max-age=31536000";
+    add_header Content-Security-Policy "upgrade-insecure-requests";
+
+    # allow only GET, HEAD and POST
+    if ($request_method !~ ^(GET|HEAD|POST)$ ) {
+        return 444;
+    }
+
+    # Custom 401 web auth page
+    error_page 401 /401.html;
+    location = /401.html {
+        root /var/www/html/www-example-com;
+        internal;
+    }
+
+    # Custom 4xx error
+    #error_page 403 404 /4xx.html;
+    #location = /4xx.html
+    #{
+    # root /var/www/html/www-example-com;
+    # internal;
+    #}
+
+    # Custom 5xx error
+    error_page 500 502 503 504 /5xx.html;
+    location = /5xx.html {
+        root /var/www/html/www-example-com;
+        internal;
+    }
+
+    # favicon 404 off
+    location = /favicon.ico {
+        log_not_found off;
+        access_log off;
+    }
+
+    # SEO robots.txt
+    location = /robots.txt {
+        allow all;
+        log_not_found off;
+        access_log off;
+    }
+
+    # Prevent unauthorized execution
+    location ~ \..*/.*\.php$ {
+        return 403;
+    }
+
+    # Prevent unauthorized execution
+    location ~ ^/sites/.*/private/ {
+        return 403;
+    }
+
+    # Block access to scripts in site files directory
+    location ~ ^/sites/[^/]+/files/.*\.php$ {
+        deny all;
+    }
+
+    #Allow "Well-Known URIs" as per RFC 5785
+    location ~* ^/.well-known/ {
+        allow all;
+    }
+
+    # Web auth for Drupal CMS admin login
+    location /user {
+        auth_basic "Restricted Content";
+        auth_basic_user_file /var/www/html/www-example-com/.htpasswd;
+        try_files $uri $uri/ /index.php?$query_string;
+    }
+
+    # Block     access to "hidden" files and directories whose names begin with a
+    # period.   This includes directories used by version control systems such
+    # as        Subversion or Git to store control files.
+    location ~ (^|/)\. {
+        return 403;
+    }
+
+    # Don't allow direct access to PHP files in the vendor directory.
+    location ~ /vendor/.*\.php$ {
+        deny all;
+        return 404;
+    }
+
+    # Protect files and directories from prying eyes.
+    location ~* \.(engine|inc|install|make|module|profile|po|sh|.*sql|theme|twig|tpl(\.php)?|xtmpl|yml)(~|\.sw[op]|\.bak|\.orig|\.save)?$|^(\.( ?!well-known).*|Entries.*|Repository|Root|Tag|Template|composer\.(json|lock)|web\.config)$|^#.*#$|\.php(~|\.sw[op]|\.bak|\.orig|\.save)$ {
+        deny all;
+        return 404;
+    }
+
+    location ~* \.(js|css|png|jpg|jpeg|gif|webp|ico|svg|woff|woff2|mp4|webm)$ {
+        try_files $uri @rewrite;
+        expires max;
+        log_not_found off;
+    }
+    # Fighting  with Styles? This little gem is amazing.
+    # location ~ ^/sites/.*/files/imagecache/ { # For Drupal <= 6
+    location ~ ^/sites/.*/files/styles/ {
+        try_files $uri @rewrite;
+    }
+
+    # Handle    private files through Drupal. Private file's path can come
+    # with      a language prefix.
+    # location ~ ^(/[a-z\-]+)?/system/files/ { # For Drupal >= 7
+    location ~ ^(/[a-z\-]+)?/system/files/ {
+        try_files $uri /index.php?$query_string;
+    }
+
+    # Enforce   clean URLs
+    # Removes   index.php from urls like www.example.com/index.php/my-page --> www.example.com/my-page
+    # Could     be done with 301 for permanent or other redirect codes.
+    if ($request_uri ~* "^(.*/)index\.php/(.*)") {
+        return 307 $1$2;
+    }
+
+    location / {
+        # Disable directory listing
+        autoindex off;
+        # First attempt to serve request as file, then
+        # as directory, then fall back to displaying a 404.
+        # try_files $uri $uri/ =404;
+        try_files $uri $uri/ /index.php?$query_string;
+        # Fixing Cloudfront 504 issue
+        proxy_read_timeout 3600;
+    }
+
+    location @rewrite {
+        #rewrite ^/(.*)$ /index.php?q=$1; # For Drupal <= 6
+        rewrite ^ /index.php; # For Drupal >= 7
+    }
+
+    # pass PHP scripts to FastCGI server
+    #
+    location ~ \.php$ {
+        include snippets/fastcgi-php.conf;
+
+        # try_files $fastcgi_script_name =404;
+
+        fastcgi_param HTTP_PROXY "";
+        fastcgi_param SCRIPT_FILENAME $document_root$fastcgi_script_name;
+        fastcgi_param PATH_INFO $fastcgi_path_info;
+        fastcgi_param QUERY_STRING $query_string;
+        fastcgi_intercept_errors on;
+        fastcgi_buffer_size 128k;
+        fastcgi_buffers 4 256k;
+        fastcgi_busy_buffers_size 256k;
+        fastcgi_temp_file_write_size 256k;
+
+        # Proxy settings FastCGI
+        fastcgi_connect_timeout 120;
+        fastcgi_send_timeout 120;
+        fastcgi_read_timeout 120;
+
+        # With php-fpm (or other unix sockets):
+        fastcgi_pass unix:/var/run/php/php-fpm.sock;
+    }
+
+    # SSL configuration
+    #
+    # listen 443 ssl default_server;
+    # listen [::]:443 ssl default_server;
+    #
+    # Note: You should disable gzip for SSL traffic.
+    # See: https://bugs.debian.org/773332
+    #
+    # Read up on ssl_ciphers to ensure a secure configuration.
+    # See: https://bugs.debian.org/765782
+    #
+    # Self signed certs generated by the ssl-cert package
+    # Don't use them in a production server!
+    #
+    # include snippets/snakeoil.conf;
+}
 ```
