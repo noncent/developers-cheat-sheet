@@ -804,6 +804,9 @@ server {
     add_header Permissions-Policy "interest-cohort=()";
     add_header Strict-Transport-Security "max-age=31536000";
     add_header Content-Security-Policy "upgrade-insecure-requests";
+    add_header X-Content-Type-Options nosniff;
+    add_header Source-Monitoring launcher01;
+    add_header Access-Control-Allow-Origin *;
 
     # allow only GET, HEAD and POST
     if ($request_method !~ ^(GET|HEAD|POST)$ ) {
