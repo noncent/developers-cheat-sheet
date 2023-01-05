@@ -978,3 +978,42 @@ server {
     # include snippets/snakeoil.conf;
 }
 ```
+
+## PHP FPM | INI config
+---
+<!-- Ubuntu Custom PHP INI Path /etc/php/{version}/fpm/conf.d/custom.ini -->
+
+```html
+[PHP]
+memory_limit=256M
+upload_max_filesize=20M
+post_max_size=25M
+max_execution_time=30
+display_errors=off
+date.timezone=Asia/Kolkata
+error_reporting=E_ALL & ~E_DEPRECATED & ~E_STRICT
+magic_quotes_gpc=off
+allow_url_fopen=on
+allow_url_include=off
+max_input_time=30
+disable_functions=exec,passthru,shell_exec,system,popen
+asp_tags=off
+display_startup_errors=off
+engine=on
+expose_php=off
+ignore_repeated_errors=off
+implicit_flush=off
+Log_errors_max_len=1024
+log_errors=on
+mysqlnd.collect_memory_statistics=off
+mysqlnd.collect_statistics=off
+opcache.enable=1
+opcache.jit_buffer_size=100M
+output_buffering=4096
+realpath_cache_size=512k
+realpath_cache_ttl=300
+serialize_precision=17
+short_open_tag=on
+unserialize_callback_func=
+zend.enable_gc=on
+```
