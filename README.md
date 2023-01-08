@@ -732,6 +732,9 @@ git push -d origin <my-branch>
     [x] git checkout master
     <!-- Now run cleaner to delete a sensetie file commited name 'azdeploy.sh' here .git is local git folder -->
     [x] java -jar bfg-1.14.0.jar .git --delete-files "azdeploy.sh"
+    <!-- In case you want to delete multiple files -->
+    <!-- WARNING! DO NOT PUT SPACE BETWEEN COMMA -->
+    [x] java -jar bfg-1.14.0.jar .git --delete-files "{.env,secret.txt,*.zip,*.tar,.DS_Store,*.sh,*.bat}"
     <!-- Expire all your git ref logs -->
     [x] git reflog expire --expire=now --all
     <!-- git gc will internally trigger git prune to delete/clean expired/unwanteed logs data/history -->

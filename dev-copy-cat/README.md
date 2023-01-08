@@ -370,6 +370,12 @@ for i in *' '*; do   mv "$i" `echo $i | sed -e 's/ /_/g'`; done
 <!-- find files has spaces in names -->
 find . -name '*[[:space:]]*'
 
+<!-- find multiple types of files -->
+find . '.*\.(jpeg|jpg|gif|png)$'
+
+<!-- if want to count file -->
+find . '.*\.(jpeg|jpg|gif|png)$' | wc -l
+
 <!-- find non ascii character -->
 find . | perl -ne 'print if /[^[:ascii:]]/'
 find . -print0 | perl -n0e 'chomp; print $_, "\n" if /[[:^ascii:][:cntrl:]]/'
@@ -700,7 +706,59 @@ aws s3 cp ./dump-$(date +%Y%m%d%H%M%S).sql.gz s3://myaws-s3/backups/sqldump/
 ---
 
 ```
-COMING SOON
+<!-- How to delete a remote branch -->
+
+<!-- deleting local branch -->
+git branch -D <my-branch>
+
+<!-- deleting remote branch -->
+git push -d origin <my-branch>
+
+<!-- How to delete a file if committed in git remote/local -->
+
+<!-- Using 3rd party tool BFG 10x to 700x time faster but need Java runtime to installed -->
+1 - Download the tool from https://rtyley.github.io/bfg-repo-cleaner/
+2 - Create a separate folder and leave original git folder as backup and to keep safe
+3 - I am creating folder name 'cleaner'
+4 - Going inside cleaner using 'cd cleaner'
+5 - Once in, cloning my git repo e.g. https://github.com/somerepo.git
+6 - My cloning is completed and created a folder 'somerepo'
+7 - Going inside 'somerepo' folder
+8 - Copying downloaded 'bfg-1.14.0.jar' here
+9 - Now checking my git branch using 'git branch' command, shows I am in master branch, cool!
+10 - Now need to run command one by one
+
+    <!-- first take a checkout of remote branch here, master -->
+    [x] git checkout master
+    <!-- Now run cleaner to delete a sensetie file commited name 'azdeploy.sh' here .git is local git folder -->
+    [x] java -jar bfg-1.14.0.jar .git --delete-files "azdeploy.sh"
+    <!-- Expire all your git ref logs -->
+    [x] git reflog expire --expire=now --all
+    <!-- git gc will internally trigger git prune to delete/clean expired/unwanteed logs data/history -->
+    [x] git gc --prune=now --aggressive
+    <!-- Force update remote with new history -->
+    [x] git push --force
+
+That's it!
+
+<!-- Using git native command -->
+
+1 - Create a separate folder and leave original git folder as backup and to keep safe
+2 - I am creating folder name 'cleaner'
+3 - Going inside cleaner using 'cd cleaner'
+4 - Once in, cloning my git repo e.g. https://github.com/somerepo.git
+5 - My cloning is completed and created a folder 'somerepo'
+6 - Going inside 'somerepo' folder
+7 - Now checking my git branch using 'git branch' command, shows I am in master branch, cool!
+8 - Now need to run command one by one
+
+    [x] git filter-branch -f --tree-filter 'rm -f azdeploy.sh' HEAD
+    [x] git update-ref -d refs/original/refs/heads/<branch-name>
+    [x] git reflog expire --expire=now --all
+    [x] git gc --prune=now
+
+That's it!
+
 ```
 
 ## FFMPEG Commands
@@ -977,4 +1035,43 @@ server {
     #
     # include snippets/snakeoil.conf;
 }
+```
+
+## PHP FPM | INI config
+---
+<!-- Ubuntu Custom PHP INI Path /etc/php/{version}/fpm/conf.d/custom.ini -->
+
+```html
+[PHP]
+memory_limit=256M
+upload_max_filesize=20M
+post_max_size=25M
+max_execution_time=30
+display_errors=off
+date.timezone=Asia/Kolkata
+error_reporting=E_ALL & ~E_DEPRECATED & ~E_STRICT
+magic_quotes_gpc=off
+allow_url_fopen=on
+allow_url_include=off
+max_input_time=30
+disable_functions=exec,passthru,shell_exec,system,popen
+asp_tags=off
+display_startup_errors=off
+engine=on
+expose_php=off
+ignore_repeated_errors=off
+implicit_flush=off
+Log_errors_max_len=1024
+log_errors=on
+mysqlnd.collect_memory_statistics=off
+mysqlnd.collect_statistics=off
+opcache.enable=1
+opcache.jit_buffer_size=100M
+output_buffering=4096
+realpath_cache_size=512k
+realpath_cache_ttl=300
+serialize_precision=17
+short_open_tag=on
+unserialize_callback_func=
+zend.enable_gc=on
 ```
