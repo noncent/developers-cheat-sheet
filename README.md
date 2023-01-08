@@ -1,4 +1,4 @@
-# A Cheatsheet, Everyday commands for developers
+# Everyday Cheet Sheet | Daily use commands for developer
 
 ### Drupal CMS
 ---
