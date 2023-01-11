@@ -561,6 +561,7 @@ alias rmd="rm -r"
 <!-- Find all installed PHP versions in repo -->
 yum list installed | grep php
 amazon-linux-extras | grep php
+amazon-linux-extras install php8.1
 
 <!-- Remove all installed PHP versions from repo -->
 yum remove php*
