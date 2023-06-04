@@ -1,4 +1,6 @@
-# Everyday Cheet Sheet | Daily use commands for developer
+# Daily use commands for developers and system administrators
+Developers and system administrators often rely on a set of daily use commands to manage and troubleshoot systems. Here are some commonly used commands:
+
 
 ### Drupal CMS
 ---
