@@ -1,13 +1,16 @@
 # Web Server and Project Settings
 
 ## Project user and owner
-By default `nginx` uses "www-data" user for the website and application; it is also the same user name that was used by the server of `Apache`.
+By default `nginx` uses "www-data" user for the website and application;
+it is also the same user name that was used by the server of `Apache`.
 
 ```shell
 # first check web server user for nginx or apache
 ps aux | grep nginx
 
-# see above command showing below result that the nginx service is running using www-data user; hence folder owner should also be www-data. However you can change the nginx and project folder owner as per your requirement.
+# see above command showing below result that the nginx service is running using
+# www-data user; hence folder owner should also be www-data. However you can change
+# the nginx and project folder owner as per your requirement.
 
 ubuntu@webserver-01:~$ ps aux | grep nginx
 root      374877  0.0  0.0  52092  6248 ?        Ss   Sep13   0:00 nginx: master process /usr/sbin/nginx -g daemon on; master_process on;
@@ -23,7 +26,9 @@ ps aux | grep httpd
 ps aux | grep php
 ps aux | grep fpm
 
-# see above command showing below result that the php or php-fpm service is running using www-data user; hence folder owner should also be www-data. However you can change the nginx and project folder owner as per your requirement.
+# see above command showing below result that the php or php-fpm service is running using www-data user;
+# hence folder owner should also be www-data. However you can change the nginx and project
+# folder owner as per your requirement.
 
 ubuntu@webserver-01:~$ ps aux | grep php
 root       33984  0.0  0.2 216120 16640 ?        Ss   Jul11   8:51 php-fpm: master process (/etc/php/8.0/fpm/php-fpm.conf)
@@ -81,7 +86,9 @@ www-data  368776  0.0  0.8 298648 67360 ?        S    Sep12   0:14 php-fpm: pool
 www-data  368777  0.0  0.8 297060 67548 ?        S    Sep12   0:20 php-fpm: pool www
 neesingh  443552  0.0  0.0   8164   656 pts/0    R+   07:39   0:00 grep --color=auto php-fpm
 
-# this is the output if php-fpm service is running and we can see a path /etc/php/8.0/fpm/php-fpm.conf is there which is fpm config to manage the settings, open it to see the other config ad user details.
+# this is the output if php-fpm service is running and we can see a
+# path /etc/php/8.0/fpm/php-fpm.conf is there which is fpm config to manage the settings,
+# open it to see the other config ad user details.
 
 vi /etc/php/8.0/fpm/php-fpm.conf
 
@@ -162,5 +169,8 @@ vi /etc/php/8.0/fpm/pool.d/www.conf
 # ;listen.acl_users =
 # ;listen.acl_groups =
 
-# notice the user and group you will see same www-data, you can also see the listen and listen.owner. Here listen 'listen =' can be use in nginx to forward the php request to fpm socket. Hence make sure your project folder has right owner and group to make sure web server and other services can read and write the files and folders.  
+# notice the user and group you will see same www-data, you can also see the listen and listen.owner.
+# Here listen 'listen =' can be use in nginx to forward the php request to fpm socket.
+# Hence make sure your project folder has right owner and group to make sure web server
+# and other services can read and write the files and folders.
 ```
