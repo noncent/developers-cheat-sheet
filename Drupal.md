@@ -1,8 +1,7 @@
 
 # Drupal Project
 
-## How to install the drupal in linux system?
-## How to install the PHP in linux system?
+## How to install PHP 8.2, Nginx, PHP-FPM, Composer, Drush, and Drupal in linux system?
 
 ```shell
 # here are the steps to install PHP 8.2, Nginx, PHP-FPM, Composer, Drush, and Drupal on Ubuntu 18.04 LTS:
