@@ -1,811 +1,916 @@
-# Daily use commands for developers and system administrators
-Developers and system administrators often rely on a set of daily use commands to manage and troubleshoot systems. Here are some commonly used commands:
+# Essential Drupal Commands
 
+## Drupal Files and Folders Permissions
 
-### Drupal CMS
----
+To ensure the proper functioning of Drupal CMS, it's crucial to manage file and folder permissions appropriately. Below are commands that address permissions for various Drupal components:
 
-```html
- <!--Drupal files and folders permissions -->
-/default on 755
-/default/files including all subfolders and files on 744 (or 755)
-/default/themes including all subfolders and files on 755
-/default/modules including all subfolders and files on 755
-/default/settings.php and /default/default.settings.php on 444
+```bash
+# Set permissions for default Drupal directories
+chmod 755 /default
+chmod -R 744 /default/files
+chmod -R 755 /default/themes
+chmod -R 755 /default/modules
+chmod 444 /default/settings.php
+chmod 444 /default/default.settings.php
 
-<!-- Go to base project folder -->
+# Navigate to the base project folder
 cd /opt/www-site-com
 
-<!-- Change drupal folder permissions -->
+# Change Drupal folder permissions
 chown -R nginx: drupal && chmod -R 777 drupal
 
-<!-- Go inside drupal -->
+# Move inside the Drupal directory
 cd drupal
 
-<!-- Install composer -->
+# Install Composer
 sudo php -r "copy('https://getcomposer.org/installer', 'composer-setup.php');"
 sudo HASH="$(wget -q -O - https://composer.github.io/installer.sig)"
-HASH="$(wget -q -O - https://composer.github.io/installer.sig)"
 sudo php -r "if (hash_file('SHA384', 'composer-setup.php') === '$HASH') { echo 'Installer verified'; } else { echo 'Installer corrupt'; unlink('composer-setup.php'); } echo PHP_EOL;"
 sudo php composer-setup.php --install-dir=/usr/local/bin --filename=composer
 composer -V
 
-<!-- Composer self update -->
+# Composer self-update
 composer self-update
 
-<!-- Find composer or run direct from path -->
+# Run Composer commands
 sudo $(which composer) require 'drupal/minifyhtml:^1.11'
-
-<!-- Run composer -->
 composer require 'drupal/key:^1.16' 'drupal/menu_item_extras:^2.19' 'drupal/paragraphs:^1.15' 'drupal/queue_ui:^3.1' 'drupal/real_aes:^2.5' 'drupal/s3fs:^3.1' 'drupal/services:^4.0@beta' 'drupal/smtp:^1.2' --with-all-dependencies
 
-<!-- Create drush symlink if not exists -->
-ln  -s vendor/bin/drush drush
+# Create Drush symlink if it doesn't exist
+ln -s vendor/bin/drush drush
 
-<!-- Run update and cache clear -->
+# Run update and cache clear with Drush
 ./drush updatedb && ./drush cr
 
-<!-- Go back to project folder -->
+# Navigate back to the project folder
 cd ../
 
-<!-- Revert permissions -->
+# Revert permissions
 chown -R www-data: drupal && chmod -R 755 drupal && chmod -R 444 drupal/sites/default/settings.php
 
-<!-- Revert permissions if inside drupal -->
+# Revert permissions if inside Drupal
 chown -R www-data: $(pwd) && chmod -R 755 $(pwd) && chmod -R 444 $(pwd)/sites/default/settings.php
 ```
 
-## MySQL Commands
----
+These commands cover setting up and managing permissions, installing Composer, running Composer commands, creating Drush symlink, and handling permissions adjustments for Drupal CMS.
 
-```html
-<!-- Access monitor: -->
-mysql -u [username] -p; (will prompt for password)
+## MySQL Command Reference
 
-<!-- Show all databases: -->
-show databases;
+### Access and Database Management
 
-<!-- Access database: -->
-mysql -u [username] -p [database] (will prompt for password)
+Access MySQL monitor:
 
-<!-- Create new database: -->
-create database [database];
-
-<!-- Select database: -->
-use [database];
-
-<!-- Determine what database is in use: -->
-select database();
-
-<!-- Show all tables: -->
-show tables;
-
-<!-- Show table structure: -->
-describe [table];
-
-<!-- List all indexes on a table: -->
-show index from [table];
-
-<!-- Create new table with columns: -->
-CREATE TABLE [table] ([column] VARCHAR(120), [another-column] DATETIME);
-
-<!-- Adding a column: -->
-ALTER TABLE [table] ADD COLUMN [column] VARCHAR(120);
-
-<!-- Adding a column with an unique, auto-incrementing ID: -->
-ALTER TABLE [table] ADD COLUMN [column] int NOT NULL AUTO_INCREMENT PRIMARY KEY;
-
-<!-- Inserting a record: -->
-INSERT INTO [table] ([column], [column]) VALUES ('[value]', '[value]');
-
-<!-- MySQL function for datetime input: -->
-NOW()
-
-<!-- Selecting records: -->
-SELECT * FROM [table];
-
-<!-- Explain records: -->
-EXPLAIN SELECT * FROM [table];
-
-<!-- Selecting parts of records: -->
-SELECT [column], [another-column] FROM [table];
-
-<!-- Counting records: -->
-SELECT COUNT([column]) FROM [table];
-
-<!-- Counting and selecting grouped records: -->
-SELECT *, (SELECT COUNT([column]) FROM [table]) AS count FROM [table] GROUP BY [column];
-
-<!-- Selecting specific records: (Selectors: <, >, !=; combine multiple selectors with AND, OR) -->
-SELECT * FROM [table] WHERE [column] = [value];
-
-<!-- Select records containing [value]: -->
-SELECT * FROM [table] WHERE [column] LIKE '%[value]%';
-
-<!-- Select records starting with [value]: -->
-SELECT * FROM [table] WHERE [column] LIKE '[value]%';
-
-<!-- Select records starting with val and ending with ue: -->
-SELECT * FROM [table] WHERE [column] LIKE '[val_ue]';
-
-<!-- Select a range: -->
-SELECT * FROM [table] WHERE [column] BETWEEN [value1] and [value2];
-
-<!-- Select with custom order and only limit:  (Order: DESC, ASC) -->
-SELECT * FROM [table] WHERE [column] ORDER BY [column] ASC LIMIT [value];
-
-<!-- Updating records: -->
-UPDATE [table] SET [column] = '[updated-value]' WHERE [column] = [value];
-
-<!-- Deleting records: -->
-DELETE FROM [table] WHERE [column] = [value];
-
-<!-- Delete all records from a table (without dropping the table itself): -->
-<!-- (This also resets the incrementing counter for auto generated columns like an id column.) -->
-DELETE FROM [table];
-
-<!-- Delete all records in a table: -->
-truncate table [table];
-
-<!-- Removing table columns: -->
-ALTER TABLE [table] DROP COLUMN [column];
-
-<!-- Editing COLLATE value -->
-ALTER TABLE `media_master`
-CHANGE `media_text` `media_text` varchar(85) COLLATE 'utf8_general_ci' NULL COMMENT 'Photo Text or Label' AFTER `caption_visible`;
-
-
-<!-- Deleting tables: -->
-DROP TABLE [table];
-
-<!-- Deleting databases: -->
-DROP DATABASE [database];
-
-<!-- Custom column output names: -->
-SELECT [column] AS [custom-column] FROM [table];
-
-<!-- Export a database dump (more info here): -->
-<!-- Use --lock-tables=false option for locked tables (more info here). -->
-mysqldump -u [username] -p [database] -h localhost > db_backup.sql
-
-<!-- Import a database dump (more info here): -->
-mysql -u [username] -p -h localhost [database] < db_backup.sql
-
-<!-- Logout: -->
-exit;
-
-<!-- Database export as GZip -->
-mysqldump -u root -p -h localhost db_name | gzip > db_backup.sql.gz
-mysqldump -u root -p -h localhost db_name | gzip > db_backup.sql.gz
-
-<!-- mysqldump: Error 2020: Got packet bigger than 'max_allowed_packet'
-bytes when dumping table `mailbox_backup` at row: 3369 -->
-mysqldump --max_allowed_packet=512M -u root -p -h localhost db_name | gzip > db_backup.sql.gz
-
-<!-- $(date +'%d%m%Y') means current date in dmY format e.g. for 30 Dec 2022, print 30122022 -->
-
-<!-- mysqldump throws: Unknown table 'COLUMN_STATISTICS' in information_schema (1109) -->
-
-mysqldump --column-statistics=0 -h localhost -u root -p | gzip -c > ./db_dumps/sql-$(date +'%d%m%Y').gz
-mysqldump --column-statistics=0 -h localhost -u root -p | gzip -c > ./db_dumps/$(date +'%d%m%Y').gz
-mysqldump -u root -p db_name -h localhost | gzip > dbsql$(date +%d%m%y).sql.gz
-
-<!--
-mysqldump: Error: 'Access denied; you need (at least one of) the PROCESS privilege(s)
-for this operation' when trying to dump tablespaces
- -->
- mysqldump -u root -p db_name -h localhost --column-statistics=0 --no-tablespaces --set-gtid-purged=OFF | gzip > dump-$(date +'%m%d%Y').sql.gz
-
-<!-- Database import from GZip, 7z and zip -->
-zcat db_backup.sql.gz | mysql -u 'root' -p db_name -h localhost
-gunzip < db_backup.sql.gz | mysql -u root -p db_name -h localhost
-zcat < db_backup.sql.gz | mysql -u root -p db_name -h localhost
-zcat ./db_backup.sql.gz | mysql -u root -p db_name -h localhost
-7z x -so db_backup.sql.7z | mysql -u root -p db_name -h localhost
-unzip -p ./db_backup.sql.zip | mysql -u root -p db_name -h localhost
-
-<!-- Import MySQL file to database: -->
-mysql -u <user-name> -p < </full/path/database_import.sql>
-
-<!-- Export MySQL file to database: -->
-mysql -u <user-name> -p database > </full/path/database_export.sql>
-
-<!-- Show all database sizes: -->
-SELECT table_schema "<MY-DATABASE-NAME>", sum( data_length + index_length ) / 1024 / 1024 "Data Base Size in MB" FROM information_schema.TABLES GROUP BY table_schema;
-
-<!-- Show all tables sizes for database: -->
-SELECT table_name AS `Table`, round(((data_length + index_length) / 1024 / 1024), 2) `Size in MB` FROM information_schema.TABLES WHERE table_schema = "<MY-DATABASE-NAME>";
-
-<!-- Size in MB -->
-SELECT table_name, table_rows, data_length, index_length, round(((data_length + index_length) / 1024 / 1024), 2) as "Size in MB" FROM information_schema.TABLES WHERE table_schema = "stg_drupal_sl" ORDER BY `Size in MB` DESC;
-
-<!-- Size in GB -->
-SELECT table_schema "DB Name", sum(round(((data_length + index_length) / 1024 / 1024 / 1024), 2)) "DB Size in GB" FROM information_schema.tables GROUP BY table_schema ORDER BY `DB Size in GB` DESC;
+```bash
+mysql -u [username] -p;  # (will prompt for password)
 ```
 
-## Zip Commands
----
+Show all databases:
 
-```html
+```bash
+show databases;
+```
 
-<!-- How to ZIP Files and Directories -->
+Access a specific database:
+
+```bash
+mysql -u [username] -p [database];  # (will prompt for password)
+```
+
+Create a new database:
+
+```bash
+create database [database];
+```
+
+Select a database:
+
+```bash
+use [database];
+```
+
+Determine the current database:
+
+```bash
+select database();
+```
+
+### Table Operations
+
+Show all tables in a database:
+
+```bash
+show tables;
+```
+
+Show table structure:
+
+```bash
+describe [table];
+```
+
+List all indexes on a table:
+
+```bash
+show index from [table];
+```
+
+Create a new table with columns:
+
+```bash
+CREATE TABLE [table] ([column] VARCHAR(120), [another-column] DATETIME);
+```
+
+### Record Manipulation
+
+Insert a record:
+
+```bash
+INSERT INTO [table] ([column], [column]) VALUES ('[value]', '[value]');
+```
+
+Select all records:
+
+```bash
+SELECT * FROM [table];
+```
+
+Select specific columns:
+
+```bash
+SELECT [column], [another-column] FROM [table];
+```
+
+Update records:
+
+```bash
+UPDATE [table] SET [column] = '[updated-value]' WHERE [column] = [value];
+```
+
+Delete records:
+
+```bash
+DELETE FROM [table] WHERE [column] = [value];
+```
+
+Delete all records in a table:
+
+```bash
+DELETE FROM [table];
+```
+
+### Advanced Operations
+
+Export a database dump:
+
+```bash
+mysqldump -u [username] -p [database] -h localhost > db_backup.sql;
+```
+
+Import a database dump:
+
+```bash
+mysql -u [username] -p -h localhost [database] < db_backup.sql;
+```
+
+Show all database sizes:
+
+```bash
+SELECT table_schema "Database Name", sum(data_length + index_length) / 1024 / 1024 "Database Size (MB)" FROM information_schema.TABLES GROUP BY table_schema;
+```
+
+Show table sizes for a database:
+
+```bash
+SELECT table_name AS `Table`, round(((data_length + index_length) / 1024 / 1024), 2) `Size (MB)` FROM information_schema.TABLES WHERE table_schema = "[database]";
+```
+
+### Tips and Troubleshooting
+
+To handle large dumps:
+
+```bash
+mysqldump --max_allowed_packet=512M -u [username] -p -h localhost [database] | gzip > db_backup.sql.gz;
+```
+
+If encountering 'Access denied' error during dump:
+
+```bash
+mysqldump -u [username] -p [database] -h localhost --column-statistics=0 --no-tablespaces --set-gtid-purged=OFF | gzip > dump.sql.gz;
+```
+
+Import from compressed files (GZip, 7z, zip):
+
+```bash
+zcat db_backup.sql.gz | mysql -u [username] -p [database] -h localhost;
+7z x -so db_backup.sql.7z | mysql -u [username] -p [database] -h localhost;
+unzip -p ./db_backup.sql.zip | mysql -u [username] -p [database] -h localhost;
+```
+
+### Miscellaneous
+
+Logout from MySQL:
+
+```bash
+exit;
+```
+
+Export a database dump as GZip:
+
+```bash
+mysqldump -u root -p -h localhost [database] | gzip > db_backup.sql.gz;
+```
+
+Note: Adjust placeholders like [username], [database], [table], [column], [value], etc., based on your specific setup.
+
+## ZIP Commands
+
+### Creating ZIP Archives
+
+Zip files and directories:
+
+```bash
 zip archivename.zip filename1 filename2 filename3
+```
 
-<!-- Folder and subfolders zip -->
+Zip a folder and its subfolders:
+
+```bash
 zip -r archivename.zip directory_name
+```
 
-<!-- add multiple files and directories in the same archive -->
-zip -r archivename.zip directory_name1 directory_name2 file1 file1
+Add multiple files and directories to the same archive:
 
-<!-- Creating a Password Protected ZIP file -->
-zip -e  archivename.zip directory_name
+```bash
+zip -r archivename.zip directory_name1 directory_name2 file1 file2
+```
 
-<!-- Split the zip in 1GB each -->
+Create a password-protected ZIP file:
+
+```bash
+zip -e archivename.zip directory_name
+```
+
+Split the ZIP archive into 1GB each:
+
+```bash
 zip -s 1g -r archivename.zip directory_name
+```
 
-<!-- Everything in current folder -->
+Zip everything in the current folder:
+
+```bash
 zip archivename.zip *
 zip archivename.zip .* *
+```
 
-<!-- Unzip a ZIP file -->
+### Extracting ZIP Archives
+
+Unzip a ZIP file:
+
+```bash
 unzip latest.zip
+```
 
-<!-- Unzip a ZIP File to a Different Directory -->
+Unzip a ZIP file to a different directory:
+
+```bash
 unzip filename.zip -d /path/to/directory
+```
 
-<!-- Unzip a Password Protected ZIP file -->
+Unzip a password-protected ZIP file:
+
+```bash
 unzip -P PasswOrd filename.zip
+```
 
-<!-- Unzip Multiple ZIP Files -->
+Unzip multiple ZIP files:
+
+```bash
 unzip '*.zip'
+```
 
-<!-- Exclude Files when Unzipping a ZIP File -->
+Exclude files when unzipping a ZIP file:
+
+```bash
 unzip filename.zip -x file1-to-exclude file2-to-exclude
+```
 
-<!-- If you want to overwrite existing files without prompting, use the -o option: -->
+Overwrite existing files without prompting:
+
+```bash
 unzip -o filename.zip
 ```
 
 ## GZip Commands
----
 
-```html
-<!-- Compress file/s and delete the original -->
+### Compression and Decompression
+
+Compress a single file and delete the original:
+
+```bash
 gzip file.txt
-gzip file1.txt file2.txt file3.txt
-gzip *.txt
+```
 
-<!-- Compress a single file and keep the original -->
+Compress multiple files and delete the originals:
+
+```bash
+gzip file1.txt file2.txt file3.txt
+```
+
+Compress all text files in the current directory:
+
+```bash
+gzip *.txt
+```
+
+Compress a single file and keep the original:
+
+```bash
 gzip -c file.txt > file.txt.gz
 gzip -k file.txt > file.txt.gz
+```
 
-<!-- Compress all files recursively -->
+Compress all files recursively in the current directory:
+
+```bash
 gzip -r *
+```
 
-<!-- Decompress a gzip compressed file -->
+Decompress a gzip compressed file:
+
+```bash
 gzip -d file.txt.gz
 gunzip file.txt.gz
+```
 
-<!-- List of content file.txt, notes.txt, etc. -->
+List the content of a compressed file:
+
+```bash
 zcat test.txt.gz
+```
 
-<!-- Find / search in contents , will show example.pdf, etc. -->
+Search for a pattern in the contents of a compressed file:
+
+```bash
 zgrep exa test.txt.gz
-
 ```
 
 ## TAR Commands
----
 
-```html
+### Creating and Extracting TAR Archives
 
-<!-- Create tar archive files & folders -->
+Create a tar archive of files and folders:
+
+```bash
 tar -cvzf code.tar.gz ./code
+```
 
-<!-- Creating tgz backup of /www.site.in excluding some folders -->
+Create a tar.gz backup excluding specific folders:
+
+```bash
 tar --exclude='/var/www/db-backups' --exclude='/var/www/json_data' \
 --exclude='/var/www/vendor' -zcvf code.$(date +'%d%m%Y').tgz /var/www/www.site.in
+```
 
-<!-- Creating tgz backup in /backup folder excluding some folders -->
+Create a tar.gz backup in a specific folder excluding some folders:
+
+```bash
 tar --exclude='./folder' --exclude='./upload' -zcvf /backup/filename.tgz .
+```
 
-<!-- Extract tar archive files in a folder -->
+Extract a tar archive into a folder:
+
+```bash
 mkdir sample && tar -xf sample.tar.gz -C ./sample
+```
 
-<!-- List Content of tar contents -->
+List the contents of a tar archive:
+
+```bash
 tar -tvf sample.tar.gz
+```
 
-<!-- Extract a single file from tar contents -->
+Extract a single file from tar contents:
+
+```bash
 tar -xvf sample.tar home.html
 tar -zxvf sample.tar.gz home.html
 tar -xvf sample.tar "file1" "file2" "..."
 tar -xvf sample.tar --wildcards '*.php'
+```
 
-<!-- Append a file or folder in tar -->
+Append a file or folder to an existing tar archive:
+
+```bash
 tar -rvf sample.tar robots.txt
+```
 
-<!-- Check the Size of the tar File -->
+Check the size of a tar file without extracting:
+
+```bash
 tar -czf - sample.tar | wc -c
+```
 
-<!-- Exclude files and directories when creating tar file -->
+Exclude files and directories when creating a tar file:
+
+```bash
 tar --exclude='robots.txt' -zcvf backup.tar.gz /home/source
 tar --exclude='*.txt' -zcvf backup.tar.gz /home/source
+```
 
-<!-- Remove file and directory from tar archive -->
+Remove a file or directory from a tar archive:
+
+```bash
 tar --delete -f backup.tar.gz sample.txt
 tar --delete -f backup.tar.gz '/home/source/uploads'
 ```
 
+## Essential Linux Commands
 
-## Linux Commands
----
+### File and Directory Operations
 
-```
-STRONGLY SUGGESTING TO VISIT - https://www.explainshell.com/explain?cmd=mkdir+-p
-explainshell.com, will explain your command in easy format
-```
+1. **ls**: List files and directories.
 
-```
-Top Linux Commands You Must Know as a Regular User
-```
+   ```bash
+   ls
+   ```
 
-```html
+2. **pwd**: Print the current working directory.
 
+   ```bash
+   pwd
+   ```
 
-<!--
-Convert Non UTF Latin ANSI ASCII Character in Linux
-Sometimes we need to find and replace the UNICODE Characters like Latin, French, Chines, etc
+3. **cd**: Change directory.
 
-e.g. I want to find and replace 'АБЦ' which is non ASCII Character
-Check - https://www.branah.com/unicode-converter
--->
-echo -e '\u0410\u0411\u0426'
-printf '%s%b%s\n' "$(tput setaf 118)" "\u0410\u0411\u0426" "$(tput sgr0)"
+   ```bash
+   cd folder
+   ```
 
-<!-- Find files by there mime types  charset -->
-find . -type f -exec file --mime {} \; | grep "charset=utf-16"
+4. **mkdir**: Create directories.
 
-<!-- replace space with a underscore in files -->
-for file in *; do mv "$file" `echo $file | tr ' ' '_'` ; done
-for i in *' '*; do   mv "$i" `echo $i | sed -e 's/ /_/g'`; done
+   ```bash
+   mkdir fruits
+   ```
 
-<!-- find files has spaces in names -->
-find . -name '*[[:space:]]*'
+5. **mv**: Move or rename files and directories.
 
-<!-- find multiple types of files -->
-find . '.*\.(jpeg|jpg|gif|png)$'
+   ```bash
+   mv source _source
+   ```
 
-<!-- if want to count file -->
-find . '.*\.(jpeg|jpg|gif|png)$' | wc -l
+6. **cp**: Copy files and directories.
 
-<!-- find non ascii character -->
-find . | perl -ne 'print if /[^[:ascii:]]/'
-find . -print0 | perl -n0e 'chomp; print $_, "\n" if /[[:^ascii:][:cntrl:]]/'
+   ```bash
+   cp /backup/settings.php .
+   ```
 
-<!-- remove non ascii character file -->
-find . -print0 | perl -MFile::Path=remove_tree -n0e 'chomp; remove_tree($_, {verbose=>1}) if /[[:^ascii:][:cntrl:]]/'
+7. **rm**: Remove files or directories.
 
-<!-- Other find examples -->
-find . -type f -name "[[:upper:]]*"
-find . -type f -name "*[[:upper:]]*"
-find . -name '*[#U2013*]*'
-find . -type f -name '*[â€“*]*'
+   ```bash
+   rm -rf unused newfolder test backup
+   ```
 
-<!-- Delete file older than 7 days -->
-find . -name "*.txt" -type f -mtime +7 -exec rm -f {} \;
+8. **touch**: Create empty files.
 
-<!-- remove all non ascii characters in file name with underscore -->
-for file in *; do mv "$file" $(echo "$file" | sed -e 's/[^A-Za-z0-9._-]/_/g'); done
+   ```bash
+   touch README.txt
+   ```
 
-<!-- rename all png files in sequence order 1,2,3, ... -->
-ls *.png | cat -n | while read n f; do mv "$f" "$n.png"; done
+9. **ln**: Create symbolic links.
 
+   ```bash
+   ln -s ./vendor/bin/drush drush
+   ```
 
-<!-- ls - The most frequently used command in Linux to list directories -->
-ls -la, ls -lart
+### File Content Display and Manipulation
 
-<!-- pwd - Print working directory command in Linux -->
-cd - Linux command to navigate through directories
-cd folder
-cd ../folder
+10. **cat**: Display file contents.
 
-<!-- mkdir - Command used to create directories in Linux -->
-mkdir fruits
+    ```bash
+    cat filename
+    ```
 
-<!-- will create nested folders like fruits > red > apple -->
-mkdir -p fruits/red/apple
+11. **less**: Display paged outputs.
 
-<!-- mv - Move or rename files in Linux -->
-mv sitemap.xml sitemap-backup.xml
+    ```bash
+    less long-logs.log
+    ```
 
-<!-- will rename source folder as _source -->
-mv source _source
+12. **echo**: Print text.
 
-<!-- cp - Similar usage as mv but for copying files in Linux -->
-cp /backup/settings.php .
-cp /backup/settings.php ./settings.php
+    ```bash
+    echo "Hello, World!"
+    ```
 
-<!-- rm - Delete files or directories -->
-rm -rf unused newfolder test backup
+### Compression and Archiving
 
-<!-- touch - Create blank/empty files -->
-touch README.txt
+13. **tar**: Create and extract tar archives.
 
-<!-- ln - Create symbolic links (shortcuts) to other files -->
-ln -s ./vendor/bin/drush drush
+    ```bash
+    tar -cvzf archive.tar.gz ./folder
+    tar -xvf archive.tar.gz
+    ```
 
-<!-- cat - Display file contents on the terminal -->
-<!-- clear - Clear the terminal display -->
-<!-- echo - Print any text that follows the command -->
+14. **gzip**: Compress and decompress files.
 
-<!-- less - Linux command to display paged outputs in the terminal -->
-less long-logs.log
+    ```bash
+    gzip file.txt
+    gunzip file.txt.gz
+    ```
 
-<!-- man - Access manual pages for all Linux commands -->
-<!-- uname - Linux command to get basic information about the OS -->
-<!-- whoami - Get the active username -->
-<!-- tar - Command to extract and compress files in Linux -->
-<!-- Compress -->
-tar -cvf <archive name> <files seperated by space>
+15. **zip**: Create and extract zip archives.
 
-<!-- Extract -->
-tar -xvf <archive name>
-zip <archive name> <file names separated by space>
-unzip <archive name>
+    ```bash
+    zip archive.zip file1 file2
+    unzip archive.zip
+    ```
 
-<!-- grep - Search for a string within an output -->
-<!-- <Any command with output> | grep "<string to find>" -->
-history | grep ssh
-grep -rnw '/path/to/somewhere/' -e "rgxptrn"
-<!-- Find word drupal in current folder in all files -->
-grep -rnw . -e "drupal"
+### System Information and Management
 
-<!-- Grep find a string in each file: -->
-grep -Hnir zend_extension /usr/local/php5
-grep -in database sites/default/settings.php | grep "=>" | grep -v "*"
+16. **ps**: Display active processes.
 
+    ```bash
+    ps
+    ```
 
-<!-- find command to find the filles -->
-<!-- find the files and folders name contains backup -->
-find .  -name "*backup*"
+17. **top**: View active processes with system usage.
 
-<!-- find the files contains DS_Store and then delete them -->
-find . -type f -name ".DS_Store"  -delete
-<!-- Find file type and if name contains backup -- delete the file -->
-find . -type f -name "*backup*"  -delete
-<!-- If name contains any number -->
-find . -type f \( -name '[0-9]*' -o -name '[0-9]*' \)
+    ```bash
+    top
+    ```
 
-<!-- Linux 'sed' command stands for stream editor.
-It is used to edit streams (files) using regular expressions -->
-<!-- SED command, Find and Replace in files-->
-sed -i '' 's|https://www.site.com|https://site.com|g' ./db.sql
+18. **df**: Display disk filesystem information.
 
-<!-- head - Return the specified number of lines from the top -->
-<!-- tail - Return the specified number of lines from the bottom -->
-<!-- diff - Find the difference between two files -->
-diff <file 1> <file 2>
+    ```bash
+    df
+    ```
 
-<!-- cmp - Allows you to check if two files are identical -->
-<!-- comm - Combines the functionality of diff and cmp -->
-<!-- sort - Linux command to sort the content of a file while outputting -->
-<!-- export - Export environment variables in Linux -->
-<!-- zip - Zip files in Linux -->
-<!-- unzip - Unzip files in Linux -->
+19. **du**: Display disk usage of files and directories.
 
-<!-- cron - commands -->
-<!-- Must visit - https://crontab.guru/examples.html -->
-sudo cron -e
-<!-- Make an entry - Execute command every day @ 12pm, 4pm, and 8pm -->
-0 12 * * * /var/home/routine/update.sh >> /var/home/routine/update-cron.log 2>&1
-0 16 * * * /var/home/routine/update.sh >> /var/home/routine/update-cron.log 2>&1
-0 20 * * * /var/home/routine/update.sh >> /var/home/routine/update-cron.log
+    ```bash
+    du -h
+    ```
 
-<!-- ssh - Secure Shell command in Linux -->
-ssh username@hostname
-<!-- SSH using pem file -->
-ssh -i /source/secrets/key.pem user@34.12.12.12
+20. **uname**: Display basic information about the operating system.
 
-<!-- service - Linux command to start and stop services -->
-<!-- ps - Display active processes -->
-<!-- kill and killall - Kill active processes by process ID or name -->
-ps
-kill <process ID>
-killall <process name>
+    ```bash
+    uname -a
+    ```
 
-<!-- df - DISK FREE | Display disk filesystem information -->
-<!-- mount - Mount file systems in Linux -->
-<!-- chmod - Command to change file permissions or make them as executable -->
-chmod +x loop.sh
-<!-- setting recursive folder permission 655 -->
-chmod -R 655 web-folder
+### Searching and Editing
 
-<!-- chown - CHANGE OWNER: Command for granting ownership of files or folders -->
-chown www-data: folder
-chown -R www-data: folders
+21. **grep**: Search for patterns in files.
 
-<!-- ifconfig - Display network interfaces and IP addresses -->
-<!-- traceroute - Trace all the network hops to reach the destination -->
+    ```bash
+    grep "pattern" filename
+    ```
 
-<!-- wget - Direct download files from the internet -->
-<!-- Using wget as Spider -->
-wget --spider -r -nd -nv -H -l 1 -w 2 -o spider.log  https://www.site.com/
+22. **sed**: Stream editor for text transformation.
 
-<!-- ufw - Firewall command -->
-iptables - Base firewall for all other firewall utilities to interface with
-iptables -A INPUT -p tcp -m tcp --dport 80 -j ACCEPT
-ufw allow 80
+    ```bash
+    sed -i 's|old|new|g' file.txt
+    ```
 
-<!-- apt, pacman, yum, rpm - Package managers depending on the distro -->
-<!-- Debian and Debian-based distros - apt install <package name> -->
-<!-- Arch and Arch-based distros - pacman -S <package name> -->
-<!-- Red Hat and Red Hat-based distros - yum install <package name> -->
-<!-- Fedora and CentOS - yum install <package> -->
-<!-- sudo - Command to escalate privileges in Linux -->
-<!-- cal - View a command-line calendar -->
-<!-- alias - Create custom shortcuts for your regularly used commands -->
-alias lsl="ls -l"
-OR
-alias rmd="rm -r"
+23. **awk**: Pattern scanning and processing language.
 
-<!-- dd - Majorly used for creating bootable USB sticks -->
-<!-- whereis - Locate the binary, source, and manual pages for a command -->
-<!-- whatis - Find what a command is used for -->
-<!-- top - View active processes live with their system usage -->
-<!-- useradd and usermod - Add new user or change existing users data -->
-<!-- passwd - Create or update passwords for existing users -->
-```
+    ```bash
+    awk '{print $2}' file.txt
+    ```
 
+24. **vi or nano**: Text editors for file editing.
+
+    ```bash
+    vi filename
+    nano filename
+    ```
+
+### Networking
+
+25. **ifconfig**: Display network interfaces and IP addresses.
+
+    ```bash
+    ifconfig
+    ```
+
+26. **traceroute**: Trace network hops to reach a destination.
+
+    ```bash
+    traceroute www.example.com
+    ```
+
+27. **ssh**: Secure Shell to connect to remote servers.
+
+    ```bash
+    ssh user@hostname
+    ```
+
+28. **wget**: Download files from the internet.
+
+    ```bash
+    wget https://www.example.com/file.zip
+    ```
+
+### System Administration
+
+29. **sudo**: Execute commands with elevated privileges.
+
+    ```bash
+    sudo command
+    ```
+
+30. **ufw**: Uncomplicated Firewall for managing iptables.
+
+    ```bash
+    ufw allow 80
+    ```
+
+31. **apt, yum, pacman**: Package managers for installing software.
+
+    ```bash
+    apt install package
+    ```
+
+32. **systemctl**: Control the systemd system and service manager.
+
+    ```bash
+    systemctl start service
+    ```
+
+33. **crontab**: Schedule periodic tasks.
+
+    ```bash
+    crontab -e
+    ```
+
+These are fundamental Linux commands for everyday use, covering file operations, system information, compression, networking, and system administration. Explore and practice them to become proficient in Linux.
 
 ## Amazon Linux 2 PHP 8.1 installation
----
-```html
-<!-- Find all installed PHP versions in repo -->
-yum list installed | grep php
-amazon-linux-extras | grep php
-amazon-linux-extras install php8.1
 
-<!-- Remove all installed PHP versions from repo -->
-yum remove php*
+Your provided script appears to be a step-by-step guide for installing and configuring PHP 8.1 on Amazon Linux 2. It covers a range of tasks, including checking installed PHP versions, enabling and disabling PHP versions, installing utility tools, installing PHP extensions, configuring PHP-FPM, and more. Here's a summary of the key steps:
 
-<!-- Install packages from epel or remi -->
-yum install https://dl.fedoraproject.org/pub/epel/epel-release-latest-7.noarch.rpm
-yum install https://rpms.remirepo.net/enterprise/remi-release-7.rpm
-yum -y install https://dl.fedoraproject.org/pub/epel/epel-release-latest-7.noarch.rpm
+1. Find and remove existing PHP versions:
 
-<!-- Is used to download and make usable all the metadata for the currently enabled yum repos. -->
-yum makecache
+   ```bash
+   yum list installed | grep php
+   amazon-linux-extras | grep php
+   amazon-linux-extras install php8.1
+   yum remove php*
+   ```
 
-<!-- Install utility tools -->
-yum -y install yum-utils
+2. Install and enable repositories:
 
-<!-- Disable the current active version from repo, other wise when you will run yum install php
-it will always install php 7.4 version -->
-amazon-linux-extras disable php7.4
+   ```bash
+   yum install https://dl.fedoraproject.org/pub/epel/epel-release-latest-7.noarch.rpm
+   yum install https://rpms.remirepo.net/enterprise/remi-release-7.rpm
+   yum -y install https://dl.fedoraproject.org/pub/epel/epel-release-latest-7.noarch.rpm
+   ```
 
-<!-- Post disabling the PHP 7.4 enable the PHP 8.1 to install -->
-yum-config-manager --enable remi-php81
-amazon-linux-extras enable php8.1
+3. Disable PHP 7.4 and enable PHP 8.1:
 
-<!-- Clean the yum cache -->
-yum clean metadata
+   ```bash
+   amazon-linux-extras disable php7.4
+   yum-config-manager --enable remi-php81
+   amazon-linux-extras enable php8.1
+   ```
 
-<!-- Now it will install PHP 8.1 version -->
-yum install php
+4. Clean yum cache and install PHP 8.1:
 
-<!-- Check installed PHP version -->
-php -v
+   ```bash
+   yum makecache
+   yum clean metadata
+   yum install php
+   ```
 
-<!-- Install PHP PEAR -->
-yum install php-pear
+5. Install PHP extensions and other tools:
 
-<!-- Install PHP dev Utilities -->
-yum install php-devel
+   ```bash
+   yum install php-{pear,cgi,pdo,common,curl,mbstring,gd,mysqlnd,gettext,bcmath,json,xml,fpm,intl,zip,imagick,mcrypt:}
+   ```
 
-<!-- Install image magic with PECL -->
-pecl install imagick
+6. Restart PHP-FPM service:
 
-<!-- Install other essential PHP extensions -->
-yum install php-{pear,cgi,pdo,common,curl,mbstring,gd,mysqlnd,gettext,bcmath,json,xml,fpm,intl,zip,imagick,mcrypt:}
+   ```bash
+   service php-fpm restart
+   ```
 
-<!-- Restart PHP FPM service -->
-service php-fpm restart
+7. Check installed PHP version:
 
-<!-- Restart PHP service -->
-systemctl php restart
+   ```bash
+   php -v
+   ```
 
-<!-- Check if PHP and FPM services are running -->
-ps aux | grep php
+8. Install additional PHP tools and extensions:
 
-<!-- In case you want to install New relic for monitoring -->
-newrelic-install
+   ```bash
+   yum install php-pear php-devel
+   pecl install imagick
+   ```
 
-<!-- Restart PHP FPM service -->
-systemctl restart php-fpm.service
+9. Restart services (PHP-FPM, Nginx, or Apache):
 
-<!-- Check for which version of PHP mcrypt installed -->
-yum list installed | grep php | grep mcrypt
+   ```bash
+   systemctl restart php-fpm.service
+   service nginx reload
+   service httpd reload
+   ```
 
-<!-- Update mcrypt for newer PHP version in cse already installed -->
-yum update php-mcrypt
+10. Verify services and system status:
 
-<!-- Install PHP extensions -->
-yum install -y php-mbstring mcrypt
+    ```bash
+    systemctl status php-fpm.service
+    systemctl status nginx.service
+    df -h
+    du -sh
+    ```
 
-<!-- To see the FPM config e.g. www.conf -->
-cd /etc/php-fpm.d
-vi www.conf
+11. Update and check system packages:
 
-<!-- Reload Nginx Reverse Proxy -->
-service nginx reload
+    ```bash
+    yum check-update
+    ```
 
-<!-- Restart Apache service in case not Nginx -->
-service httpd reload
+12. Miscellaneous commands:
 
-<!-- Check if Nginx or Apache configs has any error/syntax error -->
-httpd -t
-nginx -t
+    ```bash
+    locate beauty-and-beast
+    ls -lhrt
+    tail -f /opt/www-site-com/log/error.log
+    ```
 
-<!-- Reload Nginx Reverse Proxy -->
-systemctl reload nginx.service
+These steps provide a comprehensive guide for setting up PHP 8.1 on Amazon Linux 2. Please ensure that you adapt the script to your specific server environment and requirements.
 
-<!-- Check if PHP is running -->
-systemctl | grep php
+## Essential Git Commands
 
-<!-- How much disk is free in human readable format -->
-df -h
+### Project Setup and Git Commands
 
-<!-- Check Disk Usages -->
-du -sh
+This section provides instructions on setting up a project with Git and includes commands for managing branches, merging changes, resolving conflicts, and deleting remote branches or files if committed.
 
-<!-- If you want to update all the installed linux packages -->
-yum check-update
+### Setup a Project with Git
 
-<!-- Check status of the services -->
-systemctl status php-fpm.service
-systemctl status nginx.service
+```bash
+# Initialize a new Git project in a folder called hello-git
+cd hello-git
+git init
+git config user.name "Your Name"
+git config user.email "Your Email"
+git remote add origin https://github.com/My-Website/Frontend.git
 
-<!-- The locate command finds files in Linux using the file name. -->
-locate beauty-and-beast
+# To check existing origin and URL
+git remote -v
 
-<!-- See list of files visit https://man7.org/linux/man-pages/man1/ls.1.html-->
-ls -lhrt
+# To update the existing URL
+git remote set-url origin <new-url.git>
 
-tail -f  /opt/www-site-com/log/error.log
+# Here, origin is the alias name for your added URL. You can use multiple URLs and aliases like:
+git remote add github <github-url>
+git remote add bitbucket <bitbucket-url>
 
-<!--
-    Copy all images from one step back to current images folder
+# To use them, you have to explicitly call and mention the alias. For example:
+git checkout -b dev
+git pull github dev
 
-    -r To copy a directory along with its sub dirctories.
-    -p Preserves attribute of a file.
-    -f Forcefully
- -->
-cp -rpf ../public_html/*.jpg ./images
+# And for bitbucket:
+git checkout -b master
+git pull bitbucket master
 
-<!--  Delete folder name backups and all files ends with .gz -->
-rm -rf backups *.tar.gz
+# To switch branches, use the following command:
+git switch <branch>
 ```
 
+### Using git merge
+
+```bash
+# If you're already in a conflicted state and need to fix a single file:
+git checkout --theirs /web/public/js/master.js
+# '/web/public/js/master.js' is the file where you have many conflicts, and you want to accept the dev file.
+
+# At any time, if you feel that the merge was executed accidentally, you can use:
+git merge --abort
+git reset --merge
+git reset --hard
+git reset --hard HEAD@{1}
+# These commands will take you back to the previous state where your branch was happy (HEAD).
+
+# HEAD is a state where you have no pending commits, and your branch is up to date with no local changes.
+```
+
+### Delete a Remote Branch
+
+```bash
+# Deleting local branch
+git branch -D <my-branch>
+
+# Deleting remote branch
+git push -d origin <my-branch>
+```
+
+### Delete a file if committed
+
+### Using BFG (Java Runtime Required)
+
+1. Download the BFG tool from [BFG Repo-Cleaner](https://rtyley.github.io/bfg-repo-cleaner/).
+2. Create a separate folder (e.g., 'cleaner') as a backup.
+3. Clone the Git repository into the 'cleaner' folder.
+4. Change directory to the cloned repository.
+5. Copy the downloaded 'bfg-1.14.0.jar' into the repository folder.
+6. Check the current branch (`git branch`).
+7. Run the following commands:
+
+```bash
+# Checkout to the master branch
+git checkout master
+
+# Run BFG to delete a sensitive file (e.g., 'azdeploy.sh')
+java -jar bfg-1.14.0.jar .git --delete-files "azdeploy.sh"
+
+# Expire git ref logs
+git reflog expire --expire=now --all
+
+# Run Git Garbage Collection (prune)
+git gc --prune=now --aggressive
+
+# Force update remote with new history
+git push origin --force --all
+```
+
+### Using Git Native Commands
+
+```bash
+# Run Git filter-branch to remove the file (e.g., 'azdeploy.sh')
+git filter-branch -f --tree-filter 'rm -f azdeploy.sh' HEAD
+
+# Update refs
+git update-ref -d refs/original/refs/heads/<branch-name>
+
+# Expire git ref logs
+git reflog expire --expire=now --all
+
+# Run Git Garbage Collection (prune)
+git gc --prune=now
+```
+
+Please note that these commands should be used with caution, especially when force-pushing changes to a remote repository, as it can overwrite existing history. Ensure you have a backup of your repository before performing such operations.
+
 ## AWS CLI Commands
----
 
-```html
-<!-- AWS S3 Command -->
+```bash
+# AWS S3 Commands
 
-<!-- I want to delete all .DS_STORE files from everywhere in bucket -->
+# I want to delete all .DS_STORE files from everywhere in bucket
+
 aws s3 rm s3://myaws-s3/backups/ --recursive --exclude "*" --include "*.DS_Store" --dryrun
 
-<!-- --dryrun will execute the command but not in real, hence once changes are correct, run again -->
+# --dryrun will execute the command but not in real, hence once changes are correct, run again
+
 aws s3 rm s3://myaws-s3/backups/ --recursive --exclude "*" --include "*.DS_Store"
 
-<!-- I want to sync my local images folder from S3 bucket folder -->
+# I want to sync my local images folder from S3 bucket folder
+
 aws s3 sync s3://myaws-s3/backups/images/ /var/www/html/www-site-com/web/images/
 
-<!-- Copying local sql dump backup on to s3 folder -->
+# Copying local sql dump backup on to s3 folder
+
 aws s3 cp ./dump-$(date +%Y%m%d%H%M%S).sql.gz s3://myaws-s3/backups/sqldump/
 ```
 
-## GIT Commands
----
-
-```
-<!-- How to delete a remote branch -->
-
-<!-- deleting local branch -->
-git branch -D <my-branch>
-
-<!-- deleting remote branch -->
-git push -d origin <my-branch>
-
-<!-- How to delete a file if committed in git remote/local -->
-
-<!-- Using 3rd party tool BFG 10x to 700x time faster but need Java runtime to installed -->
-1 - Download the tool from https://rtyley.github.io/bfg-repo-cleaner/
-2 - Create a separate folder and leave original git folder as backup and to keep safe
-3 - I am creating folder name 'cleaner'
-4 - Going inside cleaner using 'cd cleaner'
-5 - Once in, cloning my git repo e.g. https://github.com/somerepo.git
-6 - My cloning is completed and created a folder 'somerepo'
-7 - Going inside 'somerepo' folder
-8 - Copying downloaded 'bfg-1.14.0.jar' here
-9 - Now checking my git branch using 'git branch' command, shows I am in master branch, cool!
-10 - Now need to run command one by one
-
-    <!-- first take a checkout of remote branch here, master -->
-    [x] git checkout master
-    <!-- Now run cleaner to delete a sensetie file commited name 'azdeploy.sh' here .git is local git folder -->
-    [x] java -jar bfg-1.14.0.jar .git --delete-files "azdeploy.sh"
-    <!-- In case you want to delete multiple files -->
-    <!-- WARNING! DO NOT PUT SPACE BETWEEN COMMA -->
-    [x] java -jar bfg-1.14.0.jar .git --delete-files "{.env,secret.txt,*.zip,*.tar,.DS_Store,*.sh,*.bat}"
-    <!-- Expire all your git ref logs -->
-    [x] git reflog expire --expire=now --all
-    <!-- git gc will internally trigger git prune to delete/clean expired/unwanteed logs data/history -->
-    [x] git gc --prune=now --aggressive
-    <!-- Force update remote with new history -->
-    [x] git push --force
-
-That's it!
-
-<!-- Using git native command -->
-
-1 - Create a separate folder and leave original git folder as backup and to keep safe
-2 - I am creating folder name 'cleaner'
-3 - Going inside cleaner using 'cd cleaner'
-4 - Once in, cloning my git repo e.g. https://github.com/somerepo.git
-5 - My cloning is completed and created a folder 'somerepo'
-6 - Going inside 'somerepo' folder
-7 - Now checking my git branch using 'git branch' command, shows I am in master branch, cool!
-8 - Now need to run command one by one
-
-    [x] git filter-branch -f --tree-filter 'rm -f azdeploy.sh' HEAD
-    [x] git update-ref -d refs/original/refs/heads/<branch-name>
-    [x] git reflog expire --expire=now --all
-    [x] git gc --prune=now
-
-That's it!
-
-```
-
 ## FFMPEG Commands
----
 
-```html
-<!-- WebM to MP4: -->
+```bash
+# WebM to MP4:
 ffmpeg -i xss.webm -strict experimental video.mp4
 ffmpeg -i xss.webm -movflags faststart -profile:v high -level 4.2 xss.mp4
 
-<!-- MP4 to Image: -->
+# MP4 to Image:
 ffmpeg -i video.mp4 -r 1/1 $filename%03d.jpg
 ```
 
 ## OpenSSL Commands
----
 
-```html
-<!-- Encrypt: Use openssl to encrypt the file: -->
+```bash
+# Encrypt: Use openssl to encrypt the file:
 openssl aes-256-cbc -a -salt -in secrets.txt -out secrets.txt.enc
 
-<!-- Decrypt: Use openssl to decrypt the file: -->
+# Decrypt: Use openssl to decrypt the file:
 openssl aes-256-cbc -d -a -in secrets.txt.enc -out secrets.txt.new
 
-<!-- Integrate Subresource Integrity Check -->
+# Integrate Subresource Integrity Check
 openssl dgst -sha384 -binary README.md | openssl base64 -A
 ```
 
 ## Nginx Drupal settings
----
-```html
+
+```bash
 # -----------------------------------------------
 # Default server configuration www.example.com
 # -----------------------------------------------
 
 # Redirecting https://site.com to https://www.site.com
 server {
-    listen 8080;
-    server_name example.com;
-    #return 301 $scheme://www.$host$request_uri;
-    return 301 https://www.example.com$request_uri;
+listen 8080;
+server_name example.com;
+#return 301 $scheme://www.$host$request_uri;
+return 301 https://www.example.com$request_uri;
 }
 
 # Main server block
@@ -977,7 +1082,7 @@ server {
     }
 
     # Enforce   clean URLs
-    # Removes   index.php from urls like www.example.com/index.php/my-page --> www.example.com/my-page
+    # Removes   index.php from urls like www.example.com/index.php/my-page www.example.com/my-page
     # Could     be done with 301 for permanent or other redirect codes.
     if ($request_uri ~* "^(.*/)index\.php/(.*)") {
         return 307 $1$2;
@@ -1044,10 +1149,10 @@ server {
 ```
 
 ## PHP FPM | INI config
----
-<!-- Ubuntu Custom PHP INI Path /etc/php/{version}/fpm/conf.d/custom.ini -->
 
-```html
+```bash
+# Ubuntu Custom PHP INI Path /etc/php/{version}/fpm/conf.d/custom.ini
+
 [PHP]
 memory_limit=256M
 upload_max_filesize=20M
