@@ -55,6 +55,12 @@ chown -R www-data: drupal && chmod -R 755 drupal && chmod -R 444 drupal/sites/de
 chown -R www-data: $(pwd) && chmod -R 755 $(pwd) && chmod -R 444 $(pwd)/sites/default/settings.php
 ```
 
+## Bonus drush commands!
+:bulb:
+>- Open MySQL terminal <code>./drush sql-cli</code>
+>- Import sql file <code>./drush sql-cli < path/to/your/sql/file.sql</code>
+>- Export sql file <code>./drush sql-dump > path/to/your/exported/db.sql</code>
+
 These commands cover setting up and managing permissions, installing Composer, running Composer commands, creating Drush symlink, and handling permissions adjustments for Drupal CMS.
 
 ># MySQL Command Reference
@@ -1236,4 +1242,158 @@ serialize_precision=17
 short_open_tag=on
 unserialize_callback_func=
 zend.enable_gc=on
+```
+
+># Useful bash scripts
+
+```bash
+#!/bin/bash
+
+# Git Auto Pull Shell Script
+# Fetch latest code from github if any commit has made in branch or script to pull the latest drupal code from master branch if any changes are there
+# Version 1.0
+# Author Neeraj Singh
+
+# Change directory to the Drupal root directory
+cd /var/html/www
+
+# Save the current branch
+CURRENT_BRANCH=$(git rev-parse --abbrev-ref HEAD)
+
+# Set current branch name
+BRANCH=master
+
+# Check if there are any changes in the remote branch
+git fetch origin $BRANCH
+CHANGES=$(git rev-list HEAD..origin/$BRANCH --count)
+
+# Only pull changes if there are any
+if [ $CHANGES -gt 0 ]; then
+    # Check out the branch you want to pull
+    git checkout $BRANCH
+
+    # Pull the latest changes from the remote branch
+    git pull origin $BRANCH
+
+    # Check if composer.json has changed
+    if git diff --quiet composer.json; then
+        echo "composer.json has not changed."
+    else
+        echo "composer.json has changed. Running 'composer install'..."
+        composer install
+    fi
+
+    # Path to Drush executable
+    DRUSH_EXECUTABLE="./vendor/bin/drush"
+
+    # Check if Drush is installed in the vendor/bin directory
+    if [ -x "$DRUSH_EXECUTABLE" ]; then
+        echo "Drush is installed in vendor/bin directory. Running 'drush cr'..."
+        "$DRUSH_EXECUTABLE" cr
+        # Delete the watchdog table logs (optional)
+        # "$DRUSH_EXECUTABLE" -y wd-del all
+    else
+        echo "Drush is not found in vendor/bin directory."
+    fi
+
+    # Check if any errors occurred during the pull
+    if [ $? -ne 0 ]; then
+        # If there were errors, revert back to the previous state
+        git reset --hard HEAD
+        # Switch back to the previous branch
+        git checkout $CURRENT_BRANCH
+        # Exit the script with an error code
+        exit 1
+    fi
+
+    # If there were no errors, switch back to the previous branch
+    git checkout $CURRENT_BRANCH
+
+    # Exit the script with a success code
+    exit 0
+else
+    # No changes in the remote branch, exit the script with a success code
+    exit 0
+fi
+```
+
+>&nbsp;
+
+```bash
+#!/bin/bash
+
+# This is the script to export the sql backup to s3 bucket
+# Database connection details
+
+# -------------------------------------
+# WARNING!! PUTTING A PASSWORD IN THE SHELL SCRIPT IS NOT RECOMMENDED
+# use ENV vars instead
+# -------------------------------------
+
+# Seta cron like below to execute this everyday 11:30 PM
+# chmod +x /path/to/daily-sql-backup.sh
+# 30 23 * * * /path/to/daily-sql-backup.sh
+# 30 23 * * * /path/to/daily-sql-backup.sh >> /path/to/logfile.log 2>&1
+
+DB_USER="root"
+DB_PASSWORD="root"
+DB_NAME="hashkal"
+HOST_NAME="localhost"
+# S3 bucket and path
+S3_BUCKET="s3-sync-source"
+S3_PATH="prod/backup"
+# Directory for temporary backup files
+BACKUP_DIR="/root"
+# MySQL dump filename
+DUMP_FILENAME="sqldumpprod-$(date +%d%m%y).sql.gz"
+# Check if the file already exists in S3
+if aws s3 ls "s3://$S3_BUCKET/$S3_PATH/$DUMP_FILENAME"; then
+    echo "File $DUMP_FILENAME already exists in S3. Skipping backup upload."
+else
+    # Export the MySQL database
+    mysqldump --set-gtid-purged=OFF --column-statistics=0 --add-drop-table --no-tablespaces -u $DB_USER -p$DB_PASSWORD $DB_NAME -h $HOST_NAME | gzip > $BACKUP_DIR/$DUMP_FILENAME
+    # Compress the SQL dump using gzip
+    # gzip $BACKUP_DIR/$DUMP_FILENAME
+    # Upload the compressed file to S3
+    /usr/local/bin/aws s3 cp $BACKUP_DIR/$DUMP_FILENAME s3://$S3_BUCKET/$S3_PATH/
+    # Delete the local gzip file
+    rm $BACKUP_DIR/$DUMP_FILENAME
+fi
+```
+
+># CRON Jobs example
+
+```bash
+# [ Crontab Settings ]
+# =========================
+
+# SQL Backup every day at 11:30 PM
+30 23 * * * /root/daily-sql-backup.sh >> /root/cronlogfile.log 2>&1
+
+# Hashal Cron Settings @ Updated 27 July 2022
+
+# Hashal code sync from s3 to server every 30 minutes -- Disabled for now
+# 30 */2 * * * aws s3 sync s3://hashal-sync-source/prod/www.website.com/ /var/www/html/www-website-com/ --exact-timestamps && chown -R www-data:www-data /var/www/html/www-website-com/
+
+
+# Hashal daily code push from server to s3 @ 4 AM
+0 4 * * * aws s3 sync /var/www/html/www-website-com/ s3://hashal-sync-source/prod/www.website.com/ --exclude '*.gz' --exclude '.git/*' --exclude 'backup/*' --exclude 'twig/*'
+
+
+# Hashal hotel lead import script for every 5 minutes
+*/5 * * * * cd /var/www/html/www-website-com && /var/www/html/www-website-com/vendor/bin/drush isbl >> /var/www/html/www-website-com/isbl-cron.log 2>&1
+
+
+# Hashal emailers images sync from s3 to server everyday @ 8 AM
+# 0 20 * * * aws s3 sync s3://hashal-sync-source/prod/www.website.com/web/img/email-images/ /var/www/html/www-website-com/web/img/email-images/ --exact-timestamps && chown -R www-data:www-data /var/www/html/www-website-com/web/img/email-images/
+
+
+# Hashal emailers images sync from s3 to server on every midnight
+0 0 * * * aws s3 sync s3://hashal-sync-source/prod/content/email-images/ /var/www/html/www-website-com/web/img/email-images/ --exact-timestamps && chown -R www-data:www-data /var/www/html/www-website-com/web/img/email-images/ && systemctl restart varnish nginx
+
+# Delete watch dog table entries
+# */8 * * * * /var/www/html/www-website-com/vendor/bin/drush sql-query "DELETE FROM watchdog"
+
+# Delete watch dog table entries
+*/10 * * * * /var/www/html/www-website-com/vendor/bin/drush drush sql-query "DELETE FROM watchdog WHERE wid NOT IN (SELECT wid FROM (SELECT wid FROM watchdog ORDER BY timestamp DESC LIMIT 5000) AS temp);"
 ```
