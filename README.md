@@ -1,6 +1,6 @@
-# Essential Drupal Commands
+># Essential Drupal Commands
 
->## Drupal Files and Folders Permissions
+## Drupal Files and Folders Permissions
 
 To ensure the proper functioning of Drupal CMS, it's crucial to manage file and folder permissions appropriately. Below are commands that address permissions for various Drupal components:
 
@@ -54,10 +54,10 @@ chown -R www-data: $(pwd) && chmod -R 755 $(pwd) && chmod -R 444 $(pwd)/sites/de
 
 These commands cover setting up and managing permissions, installing Composer, running Composer commands, creating Drush symlink, and handling permissions adjustments for Drupal CMS.
 
-> ## MySQL Command Reference
+># MySQL Command Reference
 
 
-### Access and Database Management
+## Access and Database Management
 
 Access MySQL monitor:
 
@@ -95,7 +95,7 @@ Determine the current database:
 select database();
 ```
 
-### Table Operations
+## Table Operations
 
 Show all tables in a database:
 
@@ -121,7 +121,7 @@ Create a new table with columns:
 CREATE TABLE [table] ([column] VARCHAR(120), [another-column] DATETIME);
 ```
 
-### Record Manipulation
+## Record Manipulation
 
 Insert a record:
 
@@ -159,7 +159,7 @@ Delete all records in a table:
 DELETE FROM [table];
 ```
 
-### Advanced Operations
+## Advanced Operations
 
 Export a database dump:
 
@@ -185,7 +185,7 @@ Show table sizes for a database:
 SELECT table_name AS `Table`, round(((data_length + index_length) / 1024 / 1024), 2) `Size (MB)` FROM information_schema.TABLES WHERE table_schema = "[database]";
 ```
 
-### Tips and Troubleshooting
+## Tips and Troubleshooting
 
 To handle large dumps:
 
@@ -242,7 +242,7 @@ source /var/www/html/sql.sql;
 zcat ./sql.gz | sed 's/utf8mb4_0900_ai_ci/utf8mb4_unicode_ci/g' > sql.sql
 ```
 
-### Miscellaneous
+## Miscellaneous
 
 Logout from MySQL:
 
@@ -258,9 +258,9 @@ mysqldump -u root -p -h localhost [database] | gzip > db_backup.sql.gz;
 
 Note: Adjust placeholders like [username], [database], [table], [column], [value], etc., based on your specific setup.
 
->## ZIP Commands
+># ZIP Commands
 
-### Creating ZIP Archives
+## Creating ZIP Archives
 
 Zip files and directories:
 
@@ -299,7 +299,7 @@ zip archivename.zip *
 zip archivename.zip .* *
 ```
 
-### Extracting ZIP Archives
+## Extracting ZIP Archives
 
 Unzip a ZIP file:
 
@@ -337,9 +337,9 @@ Overwrite existing files without prompting:
 unzip -o filename.zip
 ```
 
->## GZip Commands
+># GZip Commands
 
-### Compression and Decompression
+## Compression and Decompression
 
 Compress a single file and delete the original:
 
@@ -391,9 +391,9 @@ Search for a pattern in the contents of a compressed file:
 zgrep exa test.txt.gz
 ```
 
->## TAR Commands
+># TAR Commands
 
-### Creating and Extracting TAR Archives
+## Creating and Extracting TAR Archives
 
 Create a tar archive of files and folders:
 
@@ -461,9 +461,9 @@ tar --delete -f backup.tar.gz sample.txt
 tar --delete -f backup.tar.gz '/home/source/uploads'
 ```
 
->## Essential Linux Commands
+># Essential Linux Commands
 
-### File and Directory Operations
+## File and Directory Operations
 
 1. **ls**: List files and directories.
 
@@ -519,7 +519,7 @@ tar --delete -f backup.tar.gz '/home/source/uploads'
    ln -s ./vendor/bin/drush drush
    ```
 
-### File Content Display and Manipulation
+## File Content Display and Manipulation
 
 10. **cat**: Display file contents.
 
@@ -539,7 +539,7 @@ tar --delete -f backup.tar.gz '/home/source/uploads'
     echo "Hello, World!"
     ```
 
-### Compression and Archiving
+## Compression and Archiving
 
 13. **tar**: Create and extract tar archives.
 
@@ -562,7 +562,7 @@ tar --delete -f backup.tar.gz '/home/source/uploads'
     unzip archive.zip
     ```
 
-### System Information and Management
+## System Information and Management
 
 16. **ps**: Display active processes.
 
@@ -594,7 +594,7 @@ tar --delete -f backup.tar.gz '/home/source/uploads'
     uname -a
     ```
 
-### Searching and Editing
+## Searching and Editing
 
 21. **grep**: Search for patterns in files.
 
@@ -621,7 +621,7 @@ tar --delete -f backup.tar.gz '/home/source/uploads'
     nano filename
     ```
 
-### Networking
+## Networking
 
 25. **ifconfig**: Display network interfaces and IP addresses.
 
@@ -647,7 +647,7 @@ tar --delete -f backup.tar.gz '/home/source/uploads'
     wget https://www.example.com/file.zip
     ```
 
-### System Administration
+## System Administration
 
 29. **sudo**: Execute commands with elevated privileges.
 
@@ -681,7 +681,7 @@ tar --delete -f backup.tar.gz '/home/source/uploads'
 
 These are fundamental Linux commands for everyday use, covering file operations, system information, compression, networking, and system administration. Explore and practice them to become proficient in Linux.
 
-> ## Amazon Linux 2 PHP 8.1 installation
+># Amazon Linux 2 PHP 8.1 installation
 
 Your provided script appears to be a step-by-step guide for installing and configuring PHP 8.1 on Amazon Linux 2. It covers a range of tasks, including checking installed PHP versions, enabling and disabling PHP versions, installing utility tools, installing PHP extensions, configuring PHP-FPM, and more. Here's a summary of the key steps:
 
@@ -776,13 +776,13 @@ Your provided script appears to be a step-by-step guide for installing and confi
 
 These steps provide a comprehensive guide for setting up PHP 8.1 on Amazon Linux 2. Please ensure that you adapt the script to your specific server environment and requirements.
 
->## Essential Git Commands
+># Essential Git Commands
 
-### Project Setup and Git Commands
+## Project Setup and Git Commands
 
 This section provides instructions on setting up a project with Git and includes commands for managing branches, merging changes, resolving conflicts, and deleting remote branches or files if committed.
 
-### Setup a Project with Git
+## Setup a Project with Git
 
 ```bash
 # Initialize a new Git project in a folder called hello-git
@@ -814,7 +814,7 @@ git pull bitbucket master
 git switch <branch>
 ```
 
-### Using git merge
+## Using git merge
 
 ```bash
 # If you're already in a conflicted state and need to fix a single file:
@@ -831,7 +831,7 @@ git reset --hard HEAD@{1}
 # HEAD is a state where you have no pending commits, and your branch is up to date with no local changes.
 ```
 
-### Delete a Remote Branch
+## Delete a Remote Branch
 
 ```bash
 # Deleting local branch
@@ -841,9 +841,9 @@ git branch -D <my-branch>
 git push -d origin <my-branch>
 ```
 
-### Delete a file if committed
+## Delete a file if committed
 
-### Using BFG (Java Runtime Required)
+## Using BFG (Java Runtime Required)
 
 1. Download the BFG tool from [BFG Repo-Cleaner](https://rtyley.github.io/bfg-repo-cleaner/).
 2. Create a separate folder (e.g., 'cleaner') as a backup.
@@ -870,7 +870,7 @@ git gc --prune=now --aggressive
 git push origin --force --all
 ```
 
-### Using Git Native Commands
+## Using Git Native Commands
 
 ```bash
 # Run Git filter-branch to remove the file (e.g., 'azdeploy.sh')
@@ -888,7 +888,7 @@ git gc --prune=now
 
 Please note that these commands should be used with caution, especially when force-pushing changes to a remote repository, as it can overwrite existing history. Ensure you have a backup of your repository before performing such operations.
 
-> ## AWS CLI Commands
+># AWS CLI Commands
 
 ```bash
 # AWS S3 Commands
@@ -910,7 +910,7 @@ aws s3 sync s3://myaws-s3/backups/images/ /var/www/html/www-site-com/web/images/
 aws s3 cp ./dump-$(date +%Y%m%d%H%M%S).sql.gz s3://myaws-s3/backups/sqldump/
 ```
 
->## FFMPEG Commands
+># FFMPEG Commands
 
 ```bash
 # WebM to MP4:
@@ -921,7 +921,7 @@ ffmpeg -i xss.webm -movflags faststart -profile:v high -level 4.2 xss.mp4
 ffmpeg -i video.mp4 -r 1/1 $filename%03d.jpg
 ```
 
->## OpenSSL Commands
+># OpenSSL Commands
 
 ```bash
 # Encrypt: Use openssl to encrypt the file:
@@ -934,7 +934,7 @@ openssl aes-256-cbc -d -a -in secrets.txt.enc -out secrets.txt.new
 openssl dgst -sha384 -binary README.md | openssl base64 -A
 ```
 
->## Nginx Drupal settings
+># Nginx Drupal settings
 
 ```bash
 # -----------------------------------------------
@@ -1184,7 +1184,7 @@ server {
 }
 ```
 
->## PHP FPM | INI config
+># PHP FPM | INI config
 
 ```bash
 # Ubuntu Custom PHP INI Path /etc/php/{version}/fpm/conf.d/custom.ini
