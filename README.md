@@ -205,6 +205,41 @@ zcat db_backup.sql.gz | mysql -u [username] -p [database] -h localhost;
 7z x -so db_backup.sql.7z | mysql -u [username] -p [database] -h localhost;
 unzip -p ./db_backup.sql.zip | mysql -u [username] -p [database] -h localhost;
 ```
+Create new database and assign a new user to access new database
+
+```bash
+-- Create a new database
+CREATE DATABASE IF NOT EXISTS db-name;
+
+-- Switch to the new database
+USE db-name;
+
+-- Create a new user and set a password
+CREATE USER 'user-name'@'localhost' IDENTIFIED BY 'password-here';
+
+-- Grant privileges to the user for the new database
+GRANT ALL PRIVILEGES ON db-name.* TO 'user-name'@'localhost';
+
+-- Grant privileges to a specific IP address
+GRANT ALL PRIVILEGES ON db-name.* TO 'user-name'@'10.10.10.10' IDENTIFIED BY 'password-here';
+
+-- Flush privileges to apply the changes
+FLUSH PRIVILEGES;
+
+-- Import the database from agzip file
+zcat ./sql.gz | mysql -h host-name -u mysql_root -p db-name
+
+-- Import a database from sql file
+mysql -h host-name -u mysql_root -p db-name < sql.sql
+
+-- Or use large file from source
+mysql -u root -p;
+use db-name;
+source /var/www/html/sql.sql;
+
+-- Find and replace in gzip file
+zcat ./sql.gz | sed 's/utf8mb4_0900_ai_ci/utf8mb4_unicode_ci/g' > sql.sql
+```
 
 ### Miscellaneous
 
