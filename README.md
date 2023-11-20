@@ -667,6 +667,26 @@ tar --delete -f backup.tar.gz '/home/source/uploads'
 
     ```bash
     sudo command
+    
+    or you can execute multiple commands with sudo like
+    sudo sh -c 'cd /var/www/html/www-website-com && ./drush cr'
+    
+    or here in example I am taking a pull from bug-fix branch and merging into prod branch using one liner command with sudo
+    
+    sudo sh -c 'cd /var/www/html/www-website-com && git switch bug-fix && git pull origin bug-fix && git switch prod && git merge bug-fix'
+    
+    above command will execute commands in order like
+    
+    # changing the working directory
+    - cd /var/www/html/www-website-com
+    # Switching to bug-fix branch
+    - git switch bug-fix
+    # Taking a git pull from bug-fix
+    - git pull origin bug-fix
+    # Switching to branch prod
+    - git switch prod
+    # Merging bug-fix branch code into prod
+    - git merge bug-fix
     ```
 
 30. **ufw**: Uncomplicated Firewall for managing iptables.
