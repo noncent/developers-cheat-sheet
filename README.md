@@ -1,4 +1,5 @@
 ># Essential Drupal Commands
+---
 
 ## Drupal Files and Folders Permissions
 
@@ -55,6 +56,7 @@ chown -R www-data: $(pwd) && chmod -R 755 $(pwd) && chmod -R 444 $(pwd)/sites/de
 These commands cover setting up and managing permissions, installing Composer, running Composer commands, creating Drush symlink, and handling permissions adjustments for Drupal CMS.
 
 ># MySQL Command Reference
+---
 
 
 ## Access and Database Management
@@ -259,6 +261,7 @@ mysqldump -u root -p -h localhost [database] | gzip > db_backup.sql.gz;
 Note: Adjust placeholders like [username], [database], [table], [column], [value], etc., based on your specific setup.
 
 ># ZIP Commands
+---
 
 ## Creating ZIP Archives
 
@@ -338,6 +341,7 @@ unzip -o filename.zip
 ```
 
 ># GZip Commands
+---
 
 ## Compression and Decompression
 
@@ -392,6 +396,7 @@ zgrep exa test.txt.gz
 ```
 
 ># TAR Commands
+---
 
 ## Creating and Extracting TAR Archives
 
@@ -462,6 +467,7 @@ tar --delete -f backup.tar.gz '/home/source/uploads'
 ```
 
 ># Essential Linux Commands
+---
 
 ## File and Directory Operations
 
@@ -682,6 +688,7 @@ tar --delete -f backup.tar.gz '/home/source/uploads'
 These are fundamental Linux commands for everyday use, covering file operations, system information, compression, networking, and system administration. Explore and practice them to become proficient in Linux.
 
 ># Amazon Linux 2 PHP 8.1 installation
+---
 
 Your provided script appears to be a step-by-step guide for installing and configuring PHP 8.1 on Amazon Linux 2. It covers a range of tasks, including checking installed PHP versions, enabling and disabling PHP versions, installing utility tools, installing PHP extensions, configuring PHP-FPM, and more. Here's a summary of the key steps:
 
@@ -777,6 +784,7 @@ Your provided script appears to be a step-by-step guide for installing and confi
 These steps provide a comprehensive guide for setting up PHP 8.1 on Amazon Linux 2. Please ensure that you adapt the script to your specific server environment and requirements.
 
 ># Essential Git Commands
+---
 
 ## Project Setup and Git Commands
 
@@ -889,6 +897,7 @@ git gc --prune=now
 Please note that these commands should be used with caution, especially when force-pushing changes to a remote repository, as it can overwrite existing history. Ensure you have a backup of your repository before performing such operations.
 
 ># AWS CLI Commands
+---
 
 ```bash
 # AWS S3 Commands
@@ -911,6 +920,7 @@ aws s3 cp ./dump-$(date +%Y%m%d%H%M%S).sql.gz s3://myaws-s3/backups/sqldump/
 ```
 
 ># FFMPEG Commands
+---
 
 ```bash
 # WebM to MP4:
@@ -922,6 +932,7 @@ ffmpeg -i video.mp4 -r 1/1 $filename%03d.jpg
 ```
 
 ># OpenSSL Commands
+---
 
 ```bash
 # Encrypt: Use openssl to encrypt the file:
@@ -935,6 +946,7 @@ openssl dgst -sha384 -binary README.md | openssl base64 -A
 ```
 
 ># Nginx Drupal settings
+---
 
 ```bash
 # -----------------------------------------------
@@ -1185,6 +1197,7 @@ server {
 ```
 
 ># PHP FPM | INI config
+---
 
 ```bash
 # Ubuntu Custom PHP INI Path /etc/php/{version}/fpm/conf.d/custom.ini
