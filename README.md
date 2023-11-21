@@ -1381,6 +1381,62 @@ else
 fi
 ```
 
+>&nbsp;
+
+```bash
+#!/bin/bash
+  
+# git-pull-drupal.sh
+# To set this script as CRON job to run and check pull in every 5 minutes
+# */5 * * * * /root/git-pull-drupal.sh >> /var/www/html/git-cron.log 2>&1
+
+# NOTE: This git pull has a token based repository and has read 
+# only access to pull the code without password
+# To set token based authentication instead password for git pull
+# git remote add origin https://<my-repo-access-token>@bitbucket.org/website-com/cms.git
+
+# Change directory to the Drupal root directory
+cd /var/www/html/www-website-com/public_html
+
+# Save the current branch
+CURRENT_BRANCH=$(git rev-parse --abbrev-ref HEAD)
+
+# Set teh branch name
+BRANCH=production
+
+# Check if there are any changes in the remote branch
+git fetch origin $BRANCH
+CHANGES=$(git rev-list HEAD..origin/$BRANCH --count)
+
+# Only pull changes if there are any
+if [ $CHANGES -gt 0 ]; then
+  # Check out the branch you want to pull
+  git checkout $BRANCH
+
+  # Pull the latest changes from the remote branch
+  git pull origin $BRANCH
+
+  # Check if any errors occurred during the pull
+  if [ $? -ne 0 ]; then
+    # If there were errors, revert back to the previous state
+    git reset --hard HEAD
+    # Switch back to the previous branch
+    git checkout $CURRENT_BRANCH
+    # Exit the script with an error code
+    exit 1
+  fi
+
+  # If there were no errors, switch back to the previous branch
+  git checkout $CURRENT_BRANCH
+
+  # Exit the script with a success code
+  exit 0
+else
+  # No changes in the remote branch, exit the script with a success code
+  exit 0
+fi
+```
+
 ># CRON Jobs example
 
 ```bash
