@@ -250,6 +250,9 @@ source /var/www/html/sql.sql;
 
 -- Find and replace in gzip file
 zcat ./sql.gz | sed 's/utf8mb4_0900_ai_ci/utf8mb4_unicode_ci/g' > sql.sql
+
+-- Decompress the gzip file using zcat, apply sed, and compress back into gzip
+zcat "file.gz" | sed "s/find/replace/g" | gzip > "file.gz"
 ```
 
 ## Miscellaneous
@@ -1385,6 +1388,78 @@ fi
 
 ```bash
 #!/bin/bash
+
+# This is the script to import the sql backup from s3 bucket
+# e.g. db-name - sqldumpprod-251223.sql.gz refers 25 Dec, 2023
+
+# Database connection details
+
+# MySQL Database Credentials
+DB_USER="root"
+DB_PASSWORD="superpassword"
+DB_NAME="dbname"
+HOST_NAME="localhost"
+
+# S3 bucket and path
+S3_BUCKET="s3-sync-source"   
+S3_PATH="prod/backup"
+
+# Directory for temporary backup files
+BACKUP_DIR="/root"
+
+# aws bin file
+AWS="/usr/local/bin/aws"
+
+# Function to download the dump file from S3
+download_from_s3() {
+    local dump_filename="$SQLDUMP"
+    local s3_url="s3://$S3_BUCKET/$S3_PATH/$dump_filename"
+    
+    # Check if the file already exists in S3
+    if $AWS s3 ls "$s3_url"; then
+        echo "Downloading file from S3..."
+        $AWS s3 cp "$s3_url" "$BACKUP_DIR/$dump_filename"
+        return 0  # Success
+    else
+        echo "File $dump_filename not found on S3 for the specified date."
+        return 1  # Failure
+    fi
+}
+
+# Prompt the user for a date in "ddmmyy" format
+read -p "Backup date (e.g for 25 Dec, 2022 enter 251223)?: " DATE_RESTORE
+
+# Check if the input is in the correct format
+if ! [[ "$DATE_RESTORE" =~ ^[0-9]{6}$ ]]; then
+    echo "Invalid date format. Please enter in ddmmyy format."
+    exit 1
+fi
+
+# setting sql dump file name
+SQLDUMP="sqldumpprod-$DATE_RESTORE.sql.gz"
+
+# Download the dump file from S3
+if download_from_s3 "$DATE_RESTORE"; then
+    # Import MySQL dump
+    echo "Importing MySQL dump..."
+    zcat "$BACKUP_DIR/$SQLDUMP" | mysql -u $DB_USER -p$DB_PASSWORD $DB_NAME -h $HOST_NAME
+    echo "Import completed successfully."
+
+    # Delete the local gzip file
+    rm "$BACKUP_DIR/$SQLDUMP"
+    echo "Backup removed from local server"
+
+else
+    echo "Download from S3 failed. Import process aborted."
+    exit 1
+fi
+
+```
+
+>&nbsp;
+
+```bash
+#!/bin/bash
   
 # git-pull-drupal.sh
 # To set this script as CRON job to run and check pull in every 5 minutes
@@ -1437,6 +1512,108 @@ else
 fi
 ```
 
+>&nbsp;
+
+```bash
+#!/bin/bash
+
+# Below script automates post-update tasks for a web application, ensuring that the codebase is updated, dependencies are installed, caches are rebuilt, and the website remains in a healthy state. If any issues arise during this process, the script attempts to revert changes to maintain the application's stability.
+
+# Website to check for errors
+WEBSITE="https://www.site.com"
+
+# Project folder
+PROJECT_FOLDER="/var/www/html/www-site-com"
+
+# Path to drush executable
+DRUSH_EXECUTABLE="$PROJECT_FOLDER/vendor/bin/drush"
+
+# Name of the master branch
+MASTER_BRANCH="master"
+
+# Function to check if the drush command is available
+drush_available() {
+    [ -x "$DRUSH_EXECUTABLE" ]
+}
+
+# Move to the project folder
+cd "$PROJECT_FOLDER"
+
+# Check the current branch
+current_branch=$(git rev-parse --abbrev-ref HEAD)
+
+# Switch to master branch if not already on master
+if [ "$current_branch" != "$MASTER_BRANCH" ]; then
+    echo "Switching to master branch..."
+    git checkout "$MASTER_BRANCH"
+
+    # Check if the branch switch was successful
+    if [ $? -ne 0 ]; then
+        echo "Error: Failed to switch to master branch. Aborting."
+        exit 1
+    fi
+fi
+
+# Check for new commits
+if [ "$(git rev-list HEAD...origin/$MASTER_BRANCH --count)" -eq 0 ]; then
+    echo "No new commits in the $MASTER_BRANCH branch. Aborting."
+    exit 1
+fi
+
+# Perform git pull
+git pull
+
+# Check if composer.json is modified
+if git diff --name-only HEAD@{1} | grep -q "composer.json"; then
+    echo "composer.json has changed. Running composer install..."
+    composer install
+
+    # Check if composer install was successful
+    if [ $? -ne 0 ]; then
+        echo "Error: Composer install failed. Reverting git pull."
+        git reset --hard HEAD^
+        exit 1
+    fi
+fi
+
+# Check if drush command is available
+if drush_available; then
+    echo "Running drush cache rebuild..."
+    $DRUSH_EXECUTABLE cr
+
+    # Check if drush cache rebuild was successful
+    if [ $? -ne 0 ]; then
+        echo "Error: Drush cache rebuild failed. Reverting git pull."
+        git reset --hard HEAD^
+        exit 1
+    fi
+else
+    echo "Error: Drush command not available. Aborting."
+    exit 1
+fi
+
+# Check if the website is running properly
+if [ $(curl -LI $WEBSITE -o /dev/null -w '%{http_code}\n' -s) == "200" ]; then
+    echo "Website $WEBSITE is running properly after the git pull."
+else
+    echo "Error: Website $WEBSITE is not giving a 200 response. Reverting git pull."
+    git reset --hard HEAD^
+
+    # Run drush cache rebuild again
+    $DRUSH_EXECUTABLE cr
+
+    # Check if drush cache rebuild was successful after git pull revert
+    if [ $? -ne 0 ]; then
+        echo "Error: Drush cache rebuild failed even after git pull revert. Please investigate."
+    else
+        echo "Git pull reverted. Drush cache rebuild successful after git pull revert."
+    fi
+
+    exit 1
+fi
+
+```
+
 ># CRON Jobs example
 
 ```bash
@@ -1446,26 +1623,26 @@ fi
 # SQL Backup every day at 11:30 PM
 30 23 * * * /root/daily-sql-backup.sh >> /root/cronlogfile.log 2>&1
 
-# Hashal Cron Settings @ Updated 27 July 2022
+# hashi-corp Cron Settings @ Updated 27 July 2022
 
-# Hashal code sync from s3 to server every 30 minutes -- Disabled for now
-# 30 */2 * * * aws s3 sync s3://hashal-sync-source/prod/www.website.com/ /var/www/html/www-website-com/ --exact-timestamps && chown -R www-data:www-data /var/www/html/www-website-com/
-
-
-# Hashal daily code push from server to s3 @ 4 AM
-0 4 * * * aws s3 sync /var/www/html/www-website-com/ s3://hashal-sync-source/prod/www.website.com/ --exclude '*.gz' --exclude '.git/*' --exclude 'backup/*' --exclude 'twig/*'
+# hashi-corp code sync from s3 to server every 30 minutes -- Disabled for now
+# 30 */2 * * * aws s3 sync s3://hashi-corp-sync-source/prod/www.website.com/ /var/www/html/www-website-com/ --exact-timestamps && chown -R www-data:www-data /var/www/html/www-website-com/
 
 
-# Hashal hotel lead import script for every 5 minutes
+# hashi-corp daily code push from server to s3 @ 4 AM
+0 4 * * * aws s3 sync /var/www/html/www-website-com/ s3://hashi-corp-sync-source/prod/www.website.com/ --exclude '*.gz' --exclude '.git/*' --exclude 'backup/*' --exclude 'twig/*'
+
+
+# hashi-corp hotel lead import script for every 5 minutes
 */5 * * * * cd /var/www/html/www-website-com && /var/www/html/www-website-com/vendor/bin/drush isbl >> /var/www/html/www-website-com/isbl-cron.log 2>&1
 
 
-# Hashal emailers images sync from s3 to server everyday @ 8 AM
-# 0 20 * * * aws s3 sync s3://hashal-sync-source/prod/www.website.com/web/img/email-images/ /var/www/html/www-website-com/web/img/email-images/ --exact-timestamps && chown -R www-data:www-data /var/www/html/www-website-com/web/img/email-images/
+# hashi-corp emailers images sync from s3 to server everyday @ 8 AM
+# 0 20 * * * aws s3 sync s3://hashi-corp-sync-source/prod/www.website.com/web/img/email-images/ /var/www/html/www-website-com/web/img/email-images/ --exact-timestamps && chown -R www-data:www-data /var/www/html/www-website-com/web/img/email-images/
 
 
-# Hashal emailers images sync from s3 to server on every midnight
-0 0 * * * aws s3 sync s3://hashal-sync-source/prod/content/email-images/ /var/www/html/www-website-com/web/img/email-images/ --exact-timestamps && chown -R www-data:www-data /var/www/html/www-website-com/web/img/email-images/ && systemctl restart varnish nginx
+# hashi-corp emailers images sync from s3 to server on every midnight
+0 0 * * * aws s3 sync s3://hashi-corp-sync-source/prod/content/email-images/ /var/www/html/www-website-com/web/img/email-images/ --exact-timestamps && chown -R www-data:www-data /var/www/html/www-website-com/web/img/email-images/ && systemctl restart varnish nginx
 
 # Delete watch dog table entries
 # */8 * * * * /var/www/html/www-website-com/vendor/bin/drush sql-query "DELETE FROM watchdog"
