@@ -910,15 +910,6 @@ git gc --prune=now --aggressive
 
 # Force update remote with new history
 git push origin --force --all
-
-# Expire git ref logs
-git reflog expire --expire=now --all
-
-# Run Git Garbage Collection (prune)
-git gc --prune=now --aggressive
-
-# Force update remote with new history
-git push origin --force --all
 ```
 
 ## Using Git Native Commands
