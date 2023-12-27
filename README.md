@@ -899,6 +899,18 @@ git checkout master
 # Run BFG to delete a sensitive file (e.g., 'azdeploy.sh')
 java -jar bfg-1.14.0.jar .git --delete-files "azdeploy.sh"
 
+# if you want to delete multiple files then use "{file-a,file-b}"
+java -jar ~/Downloads/bfg-1.14.0.jar .git --delete-files "{settings.php,settings.local.php}"
+
+# Expire git ref logs
+git reflog expire --expire=now --all
+
+# Run Git Garbage Collection (prune)
+git gc --prune=now --aggressive
+
+# Force update remote with new history
+git push origin --force --all
+
 # Expire git ref logs
 git reflog expire --expire=now --all
 
