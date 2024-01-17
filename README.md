@@ -1653,3 +1653,196 @@ fi
 # Delete watch dog table entries
 */10 * * * * /var/www/html/www-website-com/vendor/bin/drush drush sql-query "DELETE FROM watchdog WHERE wid NOT IN (SELECT wid FROM (SELECT wid FROM watchdog ORDER BY timestamp DESC LIMIT 5000) AS temp);"
 ```
+
+># Using SSH Key for GitHub Authentication on macOS
+---
+
+## Overview
+
+This guide explains how to set up and use SSH keys for authenticating with your GitHub account on macOS. SSH keys provide a secure and convenient way to authenticate and interact with GitHub repositories without entering your username and password for each interaction.
+
+### Prerequisites
+
+- **macOS Terminal:** Ensure you have access to the Terminal application on your macOS.
+
+### Steps
+
+#### 1. **Check for Existing SSH Keys:**
+
+Before generating a new SSH key, check if you already have existing SSH keys:
+
+```bash
+ls -al ~/.ssh
+```
+
+Look for files named `id_rsa` (private key) and `id_rsa.pub` (public key). If they exist, you can skip the key generation step.
+
+#### 2. **Generate a New SSH Key:**
+
+If you don't have an existing SSH key, generate a new one:
+
+```bash
+ssh-keygen -t rsa -b 4096 -C "your_email@example.com"
+```
+
+Follow the prompts, and optionally, set a passphrase for added security.
+
+#### 3. **Start SSH Agent:**
+
+Start the SSH agent to manage your keys:
+
+```bash
+eval "$(ssh-agent -s)"
+```
+
+#### 4. **Add SSH Key to SSH Agent:**
+
+Add your SSH private key to the SSH agent:
+
+```bash
+ssh-add -K ~/.ssh/id_rsa
+```
+
+#### 5. **Copy SSH Key to Clipboard:**
+
+Copy the SSH key to your clipboard:
+
+```bash
+pbcopy < ~/.ssh/id_rsa.pub
+```
+
+#### 6. **Add SSH Key to GitHub:**
+
+- Go to your GitHub account settings.
+- Navigate to "SSH and GPG keys."
+- Click on "New SSH key."
+- Paste your SSH key into the "Key" field.
+- Give it a descriptive title and save.
+
+#### 7. **Test the Connection:**
+
+Test your SSH connection to GitHub:
+
+```bash
+ssh -T git@github.com
+```
+
+You should see a message confirming your successful authentication.
+
+## How to use?
+
+1. **Check SSH Agent:**
+   Ensure that your SSH agent is running and has your private key loaded. You can start the SSH agent and add your key using the following commands:
+
+   ```bash
+   eval "$(ssh-agent -s)"
+   ssh-add ~/.ssh/your_private_key #id_rsa
+   ```
+
+   Replace `your_private_key` with the actual name of your private key.
+
+2. **Verify SSH Key:**
+   Make sure that the public key associated with your private key is added to your GitHub account. You can check and copy your public key using:
+
+   ```bash
+   cat ~/.ssh/your_private_key.pub #id_rsa.pub
+   ```
+
+   Add the public key to your GitHub account in the "SSH and GPG keys" settings.
+
+3. **Check SSH Configuration:**
+   Ensure that your SSH configuration is set up correctly. Open or create the `~/.ssh/config` file and make sure it includes the following:
+
+   ```
+   Host github.com
+     HostName github.com
+     User git
+     IdentityFile ~/.ssh/id_rsa
+   ```
+
+   Replace `your_private_key` with the actual name of your private key.
+
+4. **Update Git Remote URL:**
+   If you are still having issues, you can try updating the remote URL for your Git repository. Change the remote URL to use the SSH format:
+
+   ```bash
+   git remote set-url origin git@github.com:your_username/your_repository.git
+   ```
+
+   Replace `your_username` and `your_repository` with your GitHub username and repository name.
+
+5. **HTTPS Instead of SSH (Optional):**
+   If you continue to face issues with SSH, you can temporarily switch to using HTTPS for cloning and pushing:
+
+   ```bash
+   git remote set-url origin https://github.com/your_username/your_repository.git
+   ```
+
+   This method uses your GitHub username and password for authentication.
+
+6. **Check Repository Existence:**
+   Ensure that the repository exists on GitHub and that you have the correct permissions to access it.
+
+   **Working example**
+   >&nbsp;
+    ```bash
+    # Change directory to the web server's root directory
+    cd /usr/local/var/www
+
+    # Create a directory named 'github' and navigate into it
+    mkdir github
+    cd github
+
+    # Initialize a new Git repository
+    git init
+
+    # Configure the Git user name
+    git config user.name "email.last@company.com"
+
+    # Add a README.md file to the staging area
+    git add README.md
+
+    # Append a line to the README.md file
+    echo "# best-brand-website" >> README.md
+
+    # Add the modified README.md file to the staging area
+    git add README.md
+
+    # Commit the changes with a commit message
+    git commit -m "first commit"
+
+    # Create and switch to a new branch named 'master'
+    git branch master
+
+    # Add a remote repository named 'origin' with the specified URL
+    git remote add origin git@github.com:company/best-brand-website.git
+
+    # Generate an SSH key pair with a specific email
+    ssh-keygen -t rsa -b 4096 -C "email.last@company.com"
+
+    # Start the SSH agent and set up the environment variables
+    eval "$(ssh-agent -s)"
+
+    # Copy the SSH public key to the clipboard
+    pbcopy < /Users/scott/.ssh/id_rsa.pub
+
+    # Manually paste the SSH key in the GitHub SSH Key settings
+
+    # Display the content of the SSH public key file
+    cat /Users/scott/.ssh/id_rsa.pub
+
+    # Create or edit the SSH configuration file and add GitHub settings
+    cat > ~/.ssh/config
+
+    Host github.com
+      HostName github.com
+      User git
+      IdentityFile ~/.ssh/id_rsa_mgh
+
+    # Press Ctrl + D to exit the input mode and save the content.
+
+    # Push the local 'master' branch to the remote 'origin' repository
+    git push origin master
+    ```
+
+After following these steps, try cloning the repository again. If you're still facing issues, double-check each step to make sure everything is configured correctly. If the problem persists, consider checking GitHub's documentation or contacting their support for further assistance.
