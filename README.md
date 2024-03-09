@@ -901,6 +901,25 @@ tar --delete -f backup.tar.gz '/home/source/uploads'
     crontab -e
     ```
 
+34. **lscpu**:See teh no of cpu in linux system.
+
+    ```bash
+    lscpu
+    ```
+
+35. **timedatectl**:Set Date and Time Zone in Linux
+
+    ```bash
+    # List available time zones to find "Asia/Kolkata"
+    timedatectl list-timezones | grep Asia/Kolkata
+
+    # Set the time zone to "Asia/Kolkata"
+    sudo timedatectl set-timezone Asia/Kolkata
+
+    # Verify the changes
+    timedatectl
+    ```
+    
 These are fundamental Linux commands for everyday use, covering file operations, system information, compression, networking, and system administration. Explore and practice them to become proficient in Linux.
 
 <br/><br/>
