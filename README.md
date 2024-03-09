@@ -1,7 +1,182 @@
 <img src="./welcome-600x300.jpg" alt="Noncent" width="100%">
 
-># Essential Drupal Commands
----
+<br/><br/>
+
+> # MacOS: Valid Self-Signed SSL Certificate (10 Marh 2024)
+
+
+
+This guide outlines the process of creating and configuring a self-signed SSL certificate on MacOS using the `minica` tool. This certificate setup is compatible with both Firefox and Chrome browsers.
+
+## Prerequisites
+
+Before proceeding, ensure you have the following:
+
+- MacOS system
+- Basic knowledge of terminal commands
+- `minica` tool installed (can be downloaded from [here](https://github.com/jsha/minica))
+
+## Step 1: Install `minica`
+
+You can install `minica` by following these steps:
+
+1. Visit the [minica GitHub repository](https://github.com/jsha/minica).
+2. Download and install the tool according to the instructions provided.
+    - Alternatively, if you have Homebrew installed, you can use the command `brew install minica` to install it.
+
+## Step 2: Generate SSL Certificate
+
+Once `minica` is installed, follow these steps to generate a self-signed SSL certificate:
+
+1. Open Terminal.
+2. Run the command `minica --domain *.dev.com`.
+    - This command generates a wildcard SSL certificate valid for all domains like `local.dev.com`, `mini.dev.com`, `uat.dev.com`, `qa.dev.com`, etc.
+3. After executing the command, you will find two files generated: `cert.pem` and `key.pem`.
+
+## Step 3: Configure Web Server
+
+You can use the generated `cert.pem` and `key.pem` files to configure your web server (e.g., Apache or Nginx) to enable HTTPS locally.
+
+### Example Nginx Configuration
+
+**nginx.conf:**
+
+```nginx
+# Define the number of worker connections for Nginx events
+events {
+    worker_connections 1024;
+}
+
+# Nginx HTTP configuration block
+http {
+    # Include MIME types configuration
+    include mime.types;
+
+    # Set the default MIME type for files with unknown extensions
+    default_type application/octet-stream;
+
+    # Define the log format for access logs
+    log_format main '$remote_addr - $remote_user [$time_local] "$request" '
+    '$status $body_bytes_sent "$http_referer" '
+    '"$http_user_agent" "$http_x_forwarded_for"';
+
+    # Configure access and error logs
+    access_log /usr/local/var/www/logs/access.log main;
+    error_log /usr/local/var/www/logs/error.log;
+
+    # Enable sendfile for efficient file transfers
+    sendfile on;
+
+    # Enable TCP_NOPUSH and TCP_NODELAY to optimize TCP connections
+    tcp_nopush on;
+    tcp_nodelay on;
+
+    # Set the maximum size of hash tables for types
+    types_hash_max_size 2048;
+
+    # Enhance security headers
+    add_header X-Content-Type-Options "nosniff" always;
+    add_header X-Frame-Options "SAMEORIGIN" always;
+    add_header X-XSS-Protection "1; mode=block" always;
+    add_header Strict-Transport-Security "max-age=31536000; includeSubDomains; preload" always;
+
+    # Disable server signature
+    server_tokens off;
+
+    # Enable gzip compression
+    gzip on;
+    gzip_disable "msie6";
+
+    # Specify the root directory and default index files
+    root /usr/local/var/www;
+    index index.php index.html;
+
+    # Server block for HTTPS
+    server {
+        listen 443 ssl;
+        server_name local.dev.com;
+
+        # Include SSL configuration
+        include ssl.conf;
+
+        # Enforce HTTPS and non-www
+        if ($scheme != "https") {
+            return 301 https://$host$request_uri;
+        }
+        if ($host = www.local.dev.com) {
+            return 301 https://local.dev.com$request_uri;
+        }
+
+        # Location block for handling requests
+        location / {
+            try_files $uri $uri/ =404;
+        }
+
+        location ~ \.php$ {
+            # include snippets/fastcgi-php.conf;
+            fastcgi_pass 127.0.0.1:9000; # Adjust the PHP version and socket path as needed
+            fastcgi_param SCRIPT_FILENAME $document_root$fastcgi_script_name;
+            include fastcgi_params;
+        }
+
+        # Add secure headers for assets (optional)
+        location ~* \.(css|js|jpg|jpeg|gif|png|ico)$ {
+            add_header Cache-Control "public, max-age=31536000, immutable";
+            add_header Expires "Sat, 30 Oct 2021 14:00:00 GMT";
+            try_files $uri =404;
+        }
+
+        # Disable unnecessary logs for assets
+        location ~* \.(css|js|jpg|jpeg|gif|png|ico)$ {
+            access_log off;
+            log_not_found off;
+        }
+
+        # Deny access to sensitive files
+        location ~ /\. {
+            deny all;
+            access_log off;
+            log_not_found off;
+        }
+    }
+
+    # Include additional server configurations from the 'servers' directory
+    include servers/*;
+}
+```
+
+**ssl.conf:**
+
+```nginx
+# the cert files and key location
+ssl_certificate /usr/local/var/www/.ssl/_.dev.com/cert.pem;
+ssl_certificate_key /usr/local/var/www/.ssl/_.dev.com/key.pem;
+ssl_ciphers HIGH:!aNULL:!MD5;
+ssl_prefer_server_ciphers on;
+
+# Enable SSL session cache for improved performance
+ssl_session_cache shared:SSL:10m;
+ssl_session_timeout 10m;
+
+# Enable advanced SSL security settings
+ssl_protocols TLSv1.2 TLSv1.3;
+```
+
+### Important
+
+* Replace paths and configurations in the above examples as per your setup.
+* Do not forget to restart your nginx web server
+* Do not forget to open the cert.pen in keychain and mark them as trusted all
+
+## Conclusion
+
+Following these steps, you can set up a valid self-signed SSL certificate on MacOS using `minica`, ensuring compatibility with Firefox and Chrome browsers.
+
+<br/>
+<br/>
+
+> # Essential Drupal Commands
+
 
 ## Drupal Files and Folders Permissions
 
@@ -63,8 +238,10 @@ chown -R www-data: $(pwd) && chmod -R 755 $(pwd) && chmod -R 444 $(pwd)/sites/de
 
 These commands cover setting up and managing permissions, installing Composer, running Composer commands, creating Drush symlink, and handling permissions adjustments for Drupal CMS.
 
-># MySQL Command Reference
----
+<br/><br/>
+
+> # MySQL Command Reference
+
 
 
 ## Access and Database Management
@@ -271,8 +448,10 @@ mysqldump -u root -p -h localhost [database] | gzip > db_backup.sql.gz;
 
 Note: Adjust placeholders like [username], [database], [table], [column], [value], etc., based on your specific setup.
 
-># ZIP Commands
----
+<br/><br/>
+
+> # ZIP Commands
+
 
 ## Creating ZIP Archives
 
@@ -351,8 +530,10 @@ Overwrite existing files without prompting:
 unzip -o filename.zip
 ```
 
-># GZip Commands
----
+<br/><br/>
+
+> # GZip Commands
+
 
 ## Compression and Decompression
 
@@ -406,8 +587,10 @@ Search for a pattern in the contents of a compressed file:
 zgrep exa test.txt.gz
 ```
 
-># TAR Commands
----
+<br/><br/>
+
+> # TAR Commands
+
 
 ## Creating and Extracting TAR Archives
 
@@ -477,8 +660,10 @@ tar --delete -f backup.tar.gz sample.txt
 tar --delete -f backup.tar.gz '/home/source/uploads'
 ```
 
-># Essential Linux Commands
----
+<br/><br/>
+
+> # Essential Linux Commands
+
 
 ## File and Directory Operations
 
@@ -718,8 +903,10 @@ tar --delete -f backup.tar.gz '/home/source/uploads'
 
 These are fundamental Linux commands for everyday use, covering file operations, system information, compression, networking, and system administration. Explore and practice them to become proficient in Linux.
 
-># Amazon Linux 2 PHP 8.1 installation
----
+<br/><br/>
+
+> # Amazon Linux 2 PHP 8.1 installation
+
 
 Your provided script appears to be a step-by-step guide for installing and configuring PHP 8.1 on Amazon Linux 2. It covers a range of tasks, including checking installed PHP versions, enabling and disabling PHP versions, installing utility tools, installing PHP extensions, configuring PHP-FPM, and more. Here's a summary of the key steps:
 
@@ -814,8 +1001,10 @@ Your provided script appears to be a step-by-step guide for installing and confi
 
 These steps provide a comprehensive guide for setting up PHP 8.1 on Amazon Linux 2. Please ensure that you adapt the script to your specific server environment and requirements.
 
-># Essential Git Commands
----
+<br/><br/>
+
+> # Essential Git Commands
+
 
 ## Project Setup and Git Commands
 
@@ -930,8 +1119,10 @@ git gc --prune=now
 
 Please note that these commands should be used with caution, especially when force-pushing changes to a remote repository, as it can overwrite existing history. Ensure you have a backup of your repository before performing such operations.
 
-># AWS CLI Commands
----
+<br/><br/>
+
+> # AWS CLI Commands
+
 
 ```bash
 # AWS S3 Commands
@@ -953,8 +1144,10 @@ aws s3 sync s3://myaws-s3/backups/images/ /var/www/html/www-site-com/web/images/
 aws s3 cp ./dump-$(date +%Y%m%d%H%M%S).sql.gz s3://myaws-s3/backups/sqldump/
 ```
 
-># FFMPEG Commands
----
+<br/><br/>
+
+> # FFMPEG Commands
+
 
 ```bash
 # WebM to MP4:
@@ -965,8 +1158,10 @@ ffmpeg -i xss.webm -movflags faststart -profile:v high -level 4.2 xss.mp4
 ffmpeg -i video.mp4 -r 1/1 $filename%03d.jpg
 ```
 
-># OpenSSL Commands
----
+<br/><br/>
+
+> # OpenSSL Commands
+
 
 ```bash
 # Encrypt: Use openssl to encrypt the file:
@@ -979,8 +1174,10 @@ openssl aes-256-cbc -d -a -in secrets.txt.enc -out secrets.txt.new
 openssl dgst -sha384 -binary README.md | openssl base64 -A
 ```
 
-># Nginx Drupal settings
----
+<br/><br/>
+
+> # Nginx Drupal settings
+
 
 ```bash
 # -----------------------------------------------
@@ -1230,8 +1427,10 @@ server {
 }
 ```
 
-># PHP FPM | INI config
----
+<br/><br/>
+
+> # PHP FPM | INI config
+
 
 ```bash
 # Ubuntu Custom PHP INI Path /etc/php/{version}/fpm/conf.d/custom.ini
@@ -1270,7 +1469,9 @@ unserialize_callback_func=
 zend.enable_gc=on
 ```
 
-># Useful bash scripts
+<br/><br/>
+
+> # Useful bash scripts
 
 ```bash
 #!/bin/bash
@@ -1343,8 +1544,6 @@ else
 fi
 ```
 
->&nbsp;
-
 ```bash
 #!/bin/bash
 
@@ -1386,8 +1585,6 @@ else
     rm $BACKUP_DIR/$DUMP_FILENAME
 fi
 ```
-
->&nbsp;
 
 ```bash
 #!/bin/bash
@@ -1459,8 +1656,6 @@ fi
 
 ```
 
->&nbsp;
-
 ```bash
 #!/bin/bash
   
@@ -1514,8 +1709,6 @@ else
   exit 0
 fi
 ```
-
->&nbsp;
 
 ```bash
 #!/bin/bash
@@ -1617,7 +1810,9 @@ fi
 
 ```
 
-># CRON Jobs example
+<br/><br/>
+
+> # CRON Jobs example
 
 ```bash
 # [ Crontab Settings ]
@@ -1654,14 +1849,16 @@ fi
 */10 * * * * /var/www/html/www-website-com/vendor/bin/drush drush sql-query "DELETE FROM watchdog WHERE wid NOT IN (SELECT wid FROM (SELECT wid FROM watchdog ORDER BY timestamp DESC LIMIT 5000) AS temp);"
 ```
 
-># Using SSH Key for GitHub Authentication on macOS
----
+<br/><br/>
+
+> # Using SSH Key for GitHub Authentication on macOS
+
 
 ## Overview
 
 This guide explains how to set up and use SSH keys for authenticating with your GitHub account on macOS. SSH keys provide a secure and convenient way to authenticate and interact with GitHub repositories without entering your username and password for each interaction.
 
-### Prerequisites
+## Prerequisites
 
 - **macOS Terminal:** Ensure you have access to the Terminal application on your macOS.
 
@@ -1729,7 +1926,7 @@ ssh -T git@github.com
 
 You should see a message confirming your successful authentication.
 
-## How to use?
+### How to use?
 
 1. **Check SSH Agent:**
    Ensure that your SSH agent is running and has your private key loaded. You can start the SSH agent and add your key using the following commands:
@@ -1784,7 +1981,7 @@ You should see a message confirming your successful authentication.
    Ensure that the repository exists on GitHub and that you have the correct permissions to access it.
 
    **Working example**
-   >&nbsp;
+ 
     ```bash
     # Change directory to the web server's root directory
     cd /usr/local/var/www
