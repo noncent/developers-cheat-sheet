@@ -2,6 +2,111 @@
 
 <br/><br/>
 
+> # Git Pull Error - "RPC failed; curl 18 transfer closed with outstanding read data remaining" (13 April 2024)
+
+**Error Message:**
+
+```
+remote: Enumerating objects: 25820, done.
+remote: Counting objects: 100% (1078/1078), done.
+remote: Compressing objects: 100% (703/703), done.
+error: RPC failed; curl 18 transfer closed with outstanding read data remaining
+error: 53384 bytes of body are still expected
+fetch-pack: unexpected disconnect while reading sideband packet
+fatal: early EOF
+fatal: fetch-pack: invalid index-pack output
+```
+
+**Solution:**
+
+**1. Turn off Compression:**
+
+```bash
+git config --global core.compression 0
+```
+
+**2. Adjust HTTP Post Buffer:**
+
+```bash
+git config --global http.postBuffer 2M
+```
+
+**3. Perform a Partial Clone:**
+
+```bash
+git clone --depth 1 <repo_URI>
+```
+
+**4. Retrieve the Rest of the Clone:**
+
+```bash
+cd <repo_directory>
+git fetch --unshallow 
+```
+
+or 
+
+```bash
+git fetch --depth=2147483647
+```
+
+**5. Regular Pull:**
+
+```bash
+git pull --all
+```
+
+**Additional Solutions:**
+
+- **Memory Configuration:**
+
+```bash
+# File path ~/.gitconfig
+
+[core] 
+    packedGitLimit = 512m 
+    packedGitWindowSize = 512m 
+[pack] 
+    deltaCacheSize = 2047m 
+    packSizeLimit = 2047m 
+    windowMemory = 2047m
+```
+
+**Or**
+
+```bash
+# File path ~/.gitconfig
+
+[core] 
+packedGitLimit = 512m 
+packedGitWindowSize = 512m 
+[pack] 
+deltaCacheSize = 2047m 
+packSizeLimit = 2047m 
+windowMemory = 2047m
+```
+
+- **HTTP Version Configuration:**
+
+```bash
+git config --global http.version HTTP/1.1
+```
+
+- **Adjusting Depth for Large Projects:**
+
+```bash
+git pull --depth=1 {repo} {branch}
+```
+
+**Note:** Some users reported issues on macOS Big Sur and resolved them by running:
+```bash
+ulimit -n unlimited
+ulimit -f unlimited
+```
+
+These solutions should help resolve the "RPC failed; curl 18 transfer closed with outstanding read data remaining" error during `git pull` operations. If the problem persists, further troubleshooting may be required.
+
+
 > # MacOS: Valid Self-Signed SSL Certificate (10 Marh 2024)
 
 
