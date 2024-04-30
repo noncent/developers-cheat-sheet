@@ -1155,7 +1155,7 @@ grep -E "pattern1|pattern2" file.txt
 ```
 - Searches for lines containing either `pattern1` or `pattern2` in the `file.txt`.
 
-**List Files Containing a Pattern** (`grep -l`):
+13. **List Files Containing a Pattern** (`grep -l`):
 ```bash
 grep -l pattern file1.txt file2.txt
 ```
@@ -1166,19 +1166,97 @@ grep -l pattern file1.txt file2.txt
 
 These are some common `grep` commands with different options to perform various types of pattern matching and text searching tasks in Unix-like systems.
 
-22. **sed**: Stream editor for text transformation.
+### Here are various common usages of the `sed` command with explanations:
 
-    ```bash
-    sed -i 's|old|new|g' file.txt
-    ```
 
-23. **awk**: Pattern scanning and processing language.
+**sed**: Stream editor for text transformation.
+
+
+1. **Substitute Text in a File**:
+```bash
+sed 's/old_text/new_text/' file.txt
+```
+- `s`: Substitute command.
+- `old_text`: The text to be replaced.
+- `new_text`: The text to replace `old_text`.
+- `file.txt`: The file in which to perform the substitution.
+
+2. **Substitute Text Globally**:
+```bash
+sed 's/old_text/new_text/g' file.txt
+```
+- `g`: Global flag, replaces all occurrences of `old_text` with `new_text` in each line of `file.txt`.
+
+3. **Substitute Text Only on Specific Lines**:
+```bash
+sed '3s/old_text/new_text/' file.txt
+```
+- Replaces `old_text` with `new_text` only on line 3 of `file.txt`.
+
+4. **Substitute Text Within a Range of Lines**:
+```bash
+sed '2,5s/old_text/new_text/' file.txt
+```
+- Replaces `old_text` with `new_text` on lines 2 to 5 of `file.txt`.
+
+5. **Substitute Text and Write Changes to a New File**:
+```bash
+sed 's/old_text/new_text/' file.txt > new_file.txt
+```
+- Writes the modified contents to `new_file.txt` instead of modifying `file.txt` directly.
+
+6. **In-Place Editing (Modify File Directly)**:
+```bash
+sed -i 's/old_text/new_text/' file.txt
+```
+- `-i`: In-place editing, modifies `file.txt` directly.
+
+7. **Delete Lines Containing a Pattern**:
+```bash
+sed '/pattern/d' file.txt
+```
+- Deletes lines containing the specified `pattern` from `file.txt`.
+
+8. **Delete Blank Lines**:
+```bash
+sed '/^$/d' file.txt
+```
+- Deletes blank lines from `file.txt`.
+
+9. **Append Text to the End of Each Line**:
+```bash
+sed 's/$/ new_text/' file.txt
+```
+- Appends `new_text` to the end of each line in `file.txt`.
+
+10. **Insert Text at the Beginning of Each Line**:
+```bash
+sed 's/^/new_text /' file.txt
+```
+- Inserts `new_text` at the beginning of each line in `file.txt`.
+
+11. **Print Specific Line or Lines**:
+```bash
+sed -n '3p' file.txt
+```
+- `-n`: Suppresses automatic printing.
+- `3p`: Prints line 3 from `file.txt`.
+
+12. **Print Lines Within a Range**:
+```bash
+sed -n '2,5p' file.txt
+```
+- Prints lines 2 to 5 from `file.txt`.
+
+These are some common usages of the `sed` command for text manipulation in Unix-like systems.
+
+13. **awk**: Pattern scanning and processing language.
 
     ```bash
     awk '{print $2}' file.txt
     ```
 
-24. **vi or nano**: Text editors for file editing.
+14. **vi or nano**: Text editors for file editing.
 
     ```bash
     vi filename
@@ -1187,25 +1265,25 @@ These are some common `grep` commands with different options to perform various 
 
 ## Networking
 
-25. **ifconfig**: Display network interfaces and IP addresses.
+15. **ifconfig**: Display network interfaces and IP addresses.
 
     ```bash
     ifconfig
     ```
 
-26. **traceroute**: Trace network hops to reach a destination.
+16. **traceroute**: Trace network hops to reach a destination.
 
     ```bash
     traceroute www.example.com
     ```
 
-27. **ssh**: Secure Shell to connect to remote servers.
+17. **ssh**: Secure Shell to connect to remote servers.
 
     ```bash
     ssh user@hostname
     ```
 
-28. **wget**: Download files from the internet.
+18. **wget**: Download files from the internet.
 
     ```bash
     wget https://www.example.com/file.zip
@@ -1213,7 +1291,7 @@ These are some common `grep` commands with different options to perform various 
 
 ## System Administration
 
-29. **sudo**: Execute commands with elevated privileges.
+19. **sudo**: Execute commands with elevated privileges.
 
     ```bash
     sudo command
@@ -1239,37 +1317,37 @@ These are some common `grep` commands with different options to perform various 
     - git merge bug-fix
     ```
 
-30. **ufw**: Uncomplicated Firewall for managing iptables.
+20. **ufw**: Uncomplicated Firewall for managing iptables.
 
     ```bash
     ufw allow 80
     ```
 
-31. **apt, yum, pacman**: Package managers for installing software.
+21. **apt, yum, pacman**: Package managers for installing software.
 
     ```bash
     apt install package
     ```
 
-32. **systemctl**: Control the systemd system and service manager.
+22. **systemctl**: Control the systemd system and service manager.
 
     ```bash
     systemctl start service
     ```
 
-33. **crontab**: Schedule periodic tasks.
+23. **crontab**: Schedule periodic tasks.
 
     ```bash
     crontab -e
     ```
 
-34. **lscpu**:See teh no of cpu in linux system.
+24. **lscpu**:See teh no of cpu in linux system.
 
     ```bash
     lscpu
     ```
 
-35. **timedatectl**:Set Date and Time Zone in Linux
+25. **timedatectl**:Set Date and Time Zone in Linux
 
     ```bash
     # List available time zones to find "Asia/Kolkata"
