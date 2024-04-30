@@ -642,128 +642,286 @@ unzip -o filename.zip
 
 ## Compression and Decompression
 
-Compress a single file and delete the original:
-
+**Compress a Single File and Delete the Original** (`gzip`):
 ```bash
 gzip file.txt
 ```
+- `gzip`: Compresses the specified file using gzip compression.
+- `file.txt`: The file you want to compress. After compression, the original file is replaced with the compressed file `file.txt.gz`.
 
-Compress multiple files and delete the originals:
-
+**Compress Multiple Files and Delete the Originals** (`gzip`):
 ```bash
 gzip file1.txt file2.txt file3.txt
 ```
+- `gzip`: Compresses multiple files using gzip compression.
+- `file1.txt file2.txt file3.txt`: The files you want to compress. After compression, the original files are replaced with their respective compressed files.
 
-Compress all text files in the current directory:
-
+**Compress All Text Files in the Current Directory** (`gzip`):
 ```bash
 gzip *.txt
 ```
+- `gzip`: Compresses all files with the `.txt` extension in the current directory using gzip compression.
 
-Compress a single file and keep the original:
-
+**Compress a Single File and Keep the Original** (`gzip -c` or `gzip -k`):
 ```bash
 gzip -c file.txt > file.txt.gz
+```
+or
+```bash
 gzip -k file.txt > file.txt.gz
 ```
+- `-c`: Writes the compressed output to standard output without changing the original file.
+- `-k`: Keeps the original file after compression.
+- `file.txt`: The file you want to compress.
+- `file.txt.gz`: The compressed output file.
 
-Compress all files recursively in the current directory:
-
+**Compress All Files Recursively in the Current Directory** (`gzip -r`):
 ```bash
 gzip -r *
 ```
+- `-r`: Recursively compresses all files and directories in the current directory using gzip compression.
 
-Decompress a gzip compressed file:
-
+**Decompress a Gzip Compressed File** (`gzip -d` or `gunzip`):
 ```bash
 gzip -d file.txt.gz
+```
+or
+```bash
 gunzip file.txt.gz
 ```
+- `-d`: Decompresses the specified gzip compressed file.
+- `file.txt.gz`: The gzip compressed file you want to decompress.
 
-List the content of a compressed file:
-
+**List the Contents of a Compressed File** (`zcat`):
 ```bash
 zcat test.txt.gz
 ```
+- `zcat`: Concatenates and displays the contents of a gzip compressed file.
+- `test.txt.gz`: The gzip compressed file whose contents you want to display.
 
-Search for a pattern in the contents of a compressed file:
-
+**Search for a Pattern in the Contents of a Compressed File** (`zgrep`):
 ```bash
 zgrep exa test.txt.gz
 ```
+- `zgrep`: Searches for a pattern in the contents of a gzip compressed file.
+- `exa`: The pattern you want to search for.
+- `test.txt.gz`: The gzip compressed file you want to search within.
+
+**Concatenate and Display Gzipped Files** (`zcat`):
+```bash
+zcat file.txt.gz
+```
+- `zcat`: Concatenates and displays the contents of gzipped files.
+- `file.txt.gz`: The gzipped file you want to display.
+
+**Compress a File with Gzip** (`gzip`):
+```bash
+gzip file.txt
+```
+- `gzip`: Compresses files using gzip compression.
+- `file.txt`: The file you want to compress. After compression, the original file is replaced with the compressed file `file.txt.gz`.
+
+**Decompress a Gzipped File** (`gzip -d` or `gunzip`):
+```bash
+gzip -d file.txt.gz
+```
+or
+```bash
+gunzip file.txt.gz
+```
+- `-d`: Decompresses files.
+- `file.txt.gz`: The gzipped file you want to decompress.
+
+**Create a Zip Archive** (`zip`):
+```bash
+zip -r archive.zip directory
+```
+- `-r`: Recursively includes all files and directories within the specified directory.
+- `archive.zip`: The name of the zip archive you want to create.
+- `directory`: The directory you want to include in the zip archive.
+
+**Extract a Zip Archive** (`unzip`):
+```bash
+unzip archive.zip
+```
+- `unzip`: Extracts files from a zip archive.
+- `archive.zip`: The zip archive you want to extract.
+
+**List Contents of a Zip Archive** (`unzip -l`):
+```bash
+unzip -l archive.zip
+```
+- `-l`: Lists contents of the zip archive.
+- `archive.zip`: The zip archive whose contents you want to list.
+
+These commands allow you to work with gzip and zip archives, including displaying the contents of gzipped files, compressing and decompressing files with gzip, creating and extracting zip archives, and listing the contents of zip archives.
 
 <br/><br/>
 
 > # TAR Commands
 
+There are various commands and options you can use with the `tar` utility in Unix-like operating systems. Here are some of the most commonly used `tar` commands along with their options:
 
-## Creating and Extracting TAR Archives
+1. **Create a Tar Archive**:
+   ```
+   tar -cvf archive.tar file1 file2 directory
+   ```
+   - `-c`: Create a new archive.
+   - `-v`: Verbose mode (show progress).
+   - `-f`: Specify the archive file name.
 
-Create a tar archive of files and folders:
+2. **Extract Tar Archive**:
+   ```
+   tar -xvf archive.tar
+   ```
+   - `-x`: Extract files from an archive.
+   - `-v`: Verbose mode (show progress).
+   - `-f`: Specify the archive file name.
+
+3. **List Contents of Tar Archive**:
+   ```
+   tar -tvf archive.tar
+   ```
+   - `-t`: List the contents of an archive.
+   - `-v`: Verbose mode (show file details).
+   - `-f`: Specify the archive file name.
+
+4. **Append Files to Existing Tar Archive**:
+   ```
+   tar -rvf archive.tar file3 file4
+   ```
+   - `-r`: Append files to an archive.
+   - `-v`: Verbose mode (show progress).
+   - `-f`: Specify the archive file name.
+
+5. **Extract Specific Files from Tar Archive**:
+   ```
+   tar -xvf archive.tar file1 file2
+   ```
+   This command extracts only `file1` and `file2` from the `archive.tar` archive.
+
+6. **Compress Tar Archive with gzip**:
+   ```
+   tar -cvzf archive.tar.gz file1 file2 directory
+   ```
+   - `-z`: Compress the archive with gzip.
+   - `-f`: Specify the archive file name.
+
+7. **Compress Tar Archive with bzip2**:
+   ```
+   tar -cvjf archive.tar.bz2 file1 file2 directory
+   ```
+   - `-j`: Compress the archive with bzip2.
+   - `-f`: Specify the archive file name.
+
+8. **Extract Tar Archive with gzip**:
+   ```
+   tar -xvzf archive.tar.gz
+   ```
+   - `-z`: Extract a gzip-compressed archive.
+   - `-v`: Verbose mode (show progress).
+   - `-f`: Specify the archive file name.
+
+9. **Extract Tar Archive with bzip2**:
+   ```
+   tar -xvjf archive.tar.bz2
+   ```
+   - `-j`: Extract a bzip2-compressed archive.
+   - `-v`: Verbose mode (show progress).
+   - `-f`: Specify the archive file name.
+
+10. **Exclude the folders while creating the tar gzip**:
 
 ```bash
-tar -cvzf code.tar.gz ./code
+tar --exclude='/var/www/.git' --exclude='/var/www/backup' \
+--exclude='/var/www/vendor' -czvf code.$(date +'%d%m%Y').tgz /var/www/www.site.in
 ```
+   - `-c`: Create a new archive.
+   - `-z`: Compress the archive with gzip.
+   - `-v`: Verbose mode (show progress).
+   - `-f`: Specify the archive file name.
 
-Create a tar.gz backup excluding specific folders:
+Here, we have excluded the `.git` folder and `backup` folder during the gzip creation
 
-```bash
-tar --exclude='/var/www/db-backups' --exclude='/var/www/json_data' \
---exclude='/var/www/vendor' -zcvf code.$(date +'%d%m%Y').tgz /var/www/www.site.in
-```
-
-Create a tar.gz backup in a specific folder excluding some folders:
-
+11. **Create a Tar Archive with gzip Compression and Exclude Certain Folders**:
 ```bash
 tar --exclude='./folder' --exclude='./upload' -zcvf /backup/filename.tgz .
 ```
 
-Extract a tar archive into a folder:
+- `--exclude='./folder' --exclude='./upload'`: Excludes the `folder` and `upload` directories from the backup.
+- `-z`: Compress the archive with gzip.
+- `-c`: Create a new archive.
+- `-v`: Verbose mode (show progress).
+- `-f`: Specify the archive file name.
+- `/backup/filename.tgz`: The path and name of the backup file. Adjust this to your desired location and filename.
+- `.`: Indicates the current directory, meaning the command creates a backup of the current directory and its contents.
 
+This command creates a tar archive with gzip compression, excluding the specified folders (`folder` and `upload`), and saves it to the `/backup` directory with the filename `filename.tgz`.
+
+12. **Extract a Tar Archive into a Folder**:
 ```bash
 mkdir sample && tar -xf sample.tar.gz -C ./sample
 ```
+- `mkdir sample`: Creates a new directory named `sample`.
+- `tar -xf sample.tar.gz -C ./sample`: Extracts the contents of `sample.tar.gz` into the `sample` directory.
+  - `-x`: Extract files from the archive.
+  - `-f`: Specify the archive file name.
+  - `-C ./sample`: Extract files into the `sample` directory.
 
-List the contents of a tar archive:
-
+13. **List the Contents of a Tar Archive**:
 ```bash
 tar -tvf sample.tar.gz
 ```
+- `-t`: List the contents of the archive.
+- `-v`: Verbose mode (show file details).
+- `-f`: Specify the archive file name.
 
-Extract a single file from tar contents:
-
+14. **Extract a Single File from Tar Contents**:
 ```bash
 tar -xvf sample.tar home.html
 tar -zxvf sample.tar.gz home.html
 tar -xvf sample.tar "file1" "file2" "..."
 tar -xvf sample.tar --wildcards '*.php'
 ```
+- `-x`: Extract files from the archive.
+- `-v`: Verbose mode (show progress).
+- `-f`: Specify the archive file name.
+- `-z`: Decompress the archive with gzip.
+- `--wildcards '*.php'`: Extract files matching the wildcard pattern `*.php`.
 
-Append a file or folder to an existing tar archive:
-
+15. **Append a File or Folder to an Existing Tar Archive**:
 ```bash
 tar -rvf sample.tar robots.txt
 ```
+- `-r`: Append files to the archive.
+- `-v`: Verbose mode (show progress).
+- `-f`: Specify the archive file name.
 
-Check the size of a tar file without extracting:
-
+16. **Check the Size of a Tar File without Extracting**:
 ```bash
 tar -czf - sample.tar | wc -c
 ```
+- `-c`: Write to standard output instead of a file.
+- `-z`: Compress the archive with gzip.
+- `wc -c`: Count the number of bytes in the output.
 
-Exclude files and directories when creating a tar file:
-
+17. **Exclude Files and Directories When Creating a Tar File**:
 ```bash
 tar --exclude='robots.txt' -zcvf backup.tar.gz /home/source
 tar --exclude='*.txt' -zcvf backup.tar.gz /home/source
 ```
+- `--exclude='robots.txt'`: Exclude the `robots.txt` file from the backup.
+- `--exclude='*.txt'`: Exclude all files with the `.txt` extension from the backup.
 
-Remove a file or directory from a tar archive:
-
+18. **Remove a File or Directory from a Tar Archive**:
 ```bash
 tar --delete -f backup.tar.gz sample.txt
 tar --delete -f backup.tar.gz '/home/source/uploads'
 ```
+- `--delete`: Remove files from the archive.
+- `-f`: Specify the archive file name.
+
+These commands cover a range of common tasks when working with tar archives in Unix-like systems.
 
 <br/><br/>
 
@@ -848,26 +1006,45 @@ tar --delete -f backup.tar.gz '/home/source/uploads'
 
 ## Compression and Archiving
 
-13. **tar**: Create and extract tar archives.
+**tar**: Create and extract tar archives.
+```bash
+tar -cvzf archive.tar.gz ./folder
+```
+- `-c`: Create a new archive.
+- `-v`: Verbose mode (show progress).
+- `-z`: Compress the archive with gzip.
+- `-f archive.tar.gz`: Specify the archive file name.
+- `./folder`: The directory you want to include in the tar archive.
 
-    ```bash
-    tar -cvzf archive.tar.gz ./folder
-    tar -xvf archive.tar.gz
-    ```
+```bash
+tar -xvf archive.tar.gz
+```
+- `-x`: Extract files from the archive.
+- `-v`: Verbose mode (show progress).
+- `-f archive.tar.gz`: Specify the archive file name.
 
-14. **gzip**: Compress and decompress files.
+**gzip**: Compress and decompress files.
+```bash
+gzip file.txt
+```
+- Compresses the file `file.txt` and replaces it with `file.txt.gz`.
 
-    ```bash
-    gzip file.txt
-    gunzip file.txt.gz
-    ```
+```bash
+gunzip file.txt.gz
+```
+- Decompresses the file `file.txt.gz` and replaces it with `file.txt`.
 
-15. **zip**: Create and extract zip archives.
+**zip**: Create and extract zip archives.
+```bash
+zip archive.zip file1 file2
+```
+- Creates a zip archive named `archive.zip` containing `file1` and `file2`.
 
-    ```bash
-    zip archive.zip file1 file2
-    unzip archive.zip
-    ```
+```bash
+unzip archive.zip
+```
+- Extracts files from the zip archive `archive.zip`.
+
 
 ## System Information and Management
 
@@ -903,11 +1080,91 @@ tar --delete -f backup.tar.gz '/home/source/uploads'
 
 ## Searching and Editing
 
-21. **grep**: Search for patterns in files.
+Here are several examples of different `grep` commands for various use cases:
 
-    ```bash
-    grep "pattern" filename
-    ```
+1. **Search for a Pattern in a File GREP**:
+
+```bash
+grep pattern file.txt
+```
+- Searches for the specified `pattern` in the `file.txt`.
+
+2. **Case-Insensitive Search**:
+```bash
+grep -i pattern file.txt
+```
+- Performs a case-insensitive search for the specified `pattern` in the `file.txt`.
+
+3. **Search for a Pattern in Multiple Files**:
+```bash
+grep pattern file1.txt file2.txt
+```
+- Searches for the specified `pattern` in `file1.txt` and `file2.txt`.
+
+4. **Recursive Search in a Directory**:
+```bash
+grep -r pattern directory
+```
+- Searches for the specified `pattern` recursively in all files within the `directory`.
+
+5. **Search for a Pattern with Line Numbers**:
+```bash
+grep -n pattern file.txt
+```
+- Displays line numbers along with the lines containing the `pattern` in the `file.txt`.
+
+6. **Display Matching Lines Only**:
+```bash
+grep -o pattern file.txt
+```
+- Displays only the matched parts of the lines containing the `pattern` in the `file.txt`.
+
+7. **Count the Number of Matching Lines**:
+```bash
+grep -c pattern file.txt
+```
+- Counts the number of lines containing the `pattern` in the `file.txt`.
+
+8. **Invert Match (Exclude Lines Matching Pattern)**:
+```bash
+grep -v pattern file.txt
+```
+- Displays lines that do not contain the `pattern` in the `file.txt`.
+
+9. **Search for Whole Words Only**:
+```bash
+grep -w pattern file.txt
+```
+- Searches for whole words matching the `pattern` in the `file.txt`.
+
+10. **Search for Lines Starting with a Pattern**:
+```bash
+grep -w "^pattern" file.txt
+```
+- Searches for lines starting with the specified `pattern` in the `file.txt`.
+
+11. **Search for Lines Ending with a Pattern**:
+```bash
+grep -w "pattern$" file.txt
+```
+- Searches for lines ending with the specified `pattern` in the `file.txt`.
+
+12. **Search for Multiple Patterns**:
+```bash
+grep -E "pattern1|pattern2" file.txt
+```
+- Searches for lines containing either `pattern1` or `pattern2` in the `file.txt`.
+
+**List Files Containing a Pattern** (`grep -l`):
+```bash
+grep -l pattern file1.txt file2.txt
+```
+- `grep`: Searches for lines containing the specified `pattern`.
+- `-l`: Lists only the names of files that contain at least one match for the pattern.
+- `pattern`: The pattern you want to search for.
+- `file1.txt file2.txt`: The files in which you want to search for the pattern. If multiple files are provided, `grep` will list only the names of files that contain a match.
+
+These are some common `grep` commands with different options to perform various types of pattern matching and text searching tasks in Unix-like systems.
 
 22. **sed**: Stream editor for text transformation.
 
