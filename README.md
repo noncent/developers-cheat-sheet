@@ -129,14 +129,36 @@ You can install `minica` by following these steps:
 2. Download and install the tool according to the instructions provided.
     - Alternatively, if you have Homebrew installed, you can use the command `brew install minica` to install it.
 
-## Step 2: Generate SSL Certificate
+## SSL Certificate Generation
 
-Once `minica` is installed, follow these steps to generate a self-signed SSL certificate:
+To create a self-signed SSL certificate using `minica`, follow these steps:
 
-1. Open Terminal.
-2. Run the command `minica --domain *.dev.com`.
-    - This command generates a wildcard SSL certificate valid for all domains like `local.dev.com`, `mini.dev.com`, `uat.dev.com`, `qa.dev.com`, etc.
-3. After executing the command, you will find two files generated: `cert.pem` and `key.pem`.
+1. **Installation**: Ensure `minica` is installed on your system.
+
+2. **Command Execution**:
+   - Open your terminal.
+   - Execute the command `minica --domains "*.development.dev"`.
+     - This command generates a wildcard SSL certificate valid for all subdomains under `.development.dev`, such as `site.development.dev`, `cms.development.dev`, etc.
+
+3. **Certificate Location**:
+   - After executing the command, you'll find two files, `cert.pem` and `key.pem`, inside the `_.development.dev` folder. This folder is created in the same location where you executed the command.
+   - For wildcard certificates, the folder will be named `_.{your wildcard domain name}`. For example, for the domain `cms.example.com`, it will be `cms.example.com`.
+
+4. **Additional Files**:
+   - Alongside, two more files named `minica-key.pem` and `minica.pem` are generated. `minica.pem` needs to be added to your system's Keychain Access on macOS or [Windows](https://gist.github.com/mwidmann/115c2a7059dcce300b61f625d887e5dc) or [Linux](https://gist.github.com/mwidmann/115c2a7059dcce300b61f625d887e5dc) .
+
+5. **Adding to Keychain Access**:
+   - macOS users can add `minica.pem` using the command: `sudo security add-trusted-cert -d -r trustRoot -k /Library/Keychains/System.keychain /my/path/to/minica.pem`.
+   - Alternatively, import the file directly using 'File >> Import items'.
+
+6. **Verification**:
+   - Once added, open 'Keychain Access', and search for 'minica'.
+   - Locate the certificate with an error icon (not marked as a blue plus sign).
+   - Double-click on the file, click 'Trust' >> 'Always Trust', then close the dialog box and 'Keychain Access'.
+   - Reopen 'Keychain Access' and search to verify if the certificate was successfully added.
+
+7. **Completion**:
+   - With these steps, each browser will accept the certificate for your domain without any errors or exceptions.
 
 ## Step 3: Configure Web Server
 
@@ -254,8 +276,8 @@ http {
 
 ```nginx
 # the cert files and key location
-ssl_certificate /usr/local/var/www/.ssl/_.dev.com/cert.pem;
-ssl_certificate_key /usr/local/var/www/.ssl/_.dev.com/key.pem;
+ssl_certificate /usr/local/var/www/.ssl/_.development.dev/cert.pem;
+ssl_certificate_key /usr/local/var/www/.ssl/_.development.dev/key.pem;
 ssl_ciphers HIGH:!aNULL:!MD5;
 ssl_prefer_server_ciphers on;
 
