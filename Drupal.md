@@ -1,5 +1,150 @@
 
 # Drupal Project
+---
+
+# Delete Older Revisions for All Content Types
+
+This PHP script deletes older revisions for all content types in a Drupal site. It's particularly useful for managing database bloat and optimizing site performance by removing unnecessary revisions.
+
+## Usage
+
+1. **Set Memory and Execution Limits**
+
+   Ensure that your PHP configuration allows for sufficient memory and execution time. This script increases memory limit to 4000M and sets execution time to unlimited.
+
+2. **Include Required Dependencies**
+
+   This script uses the EntityTypeManagerInterface interface from the Drupal Core Entity module. Ensure that your Drupal installation includes this module.
+
+3. **Function Definition: delete_older_revisions_for_all_types**
+
+   This function queries all content types, loads their nodes, and deletes older revisions, keeping only the latest 2 revisions.
+
+   **Parameters:**
+   - `$entityTypeManager`: An instance of the EntityTypeManagerInterface interface.
+
+4. **Execute the Script**
+
+   Call the `delete_older_revisions_for_all_types()` function passing an instance of the EntityTypeManagerInterface interface as an argument.
+
+## Important Note
+
+- **Backup Your Database**: Before executing this script, ensure that you have a recent backup of your Drupal database. Deleting revisions is irreversible, and having a backup ensures that you can restore your data if needed.
+
+## Script
+```php
+<?php
+ini_set('memory_limit', '4000M');
+set_time_limit(0);
+ini_set('max_execution_time', 0);
+
+use Drupal\Core\Entity\EntityTypeManagerInterface;
+// Define a function to delete older revisions for all content types.
+function delete_older_revisions_for_all_types(EntityTypeManagerInterface $entityTypeManager)
+{
+    $query = $entityTypeManager->getStorage('node')
+        ->getQuery()
+        ->sort('type', 'DESC');
+    $contentTypes = $query->execute();
+    // Loop through each content type.
+    foreach ($contentTypes as $contentType) {
+        $node = $entityTypeManager->getStorage('node')->load($contentType);
+        // Load all revisions of the current entity.
+        $revisionIds = $entityTypeManager->getStorage('node')->revisionIds($node);
+        // Sort revisions by revision ID in descending order.
+        krsort($revisionIds);
+        // Keep only the last 2 revisions.
+        $revisionsToKeep = array_slice($revisionIds, 0, 2);
+        // Delete older revisions.
+        foreach ($revisionIds as $revisionId) {
+            if (!in_array($revisionId, $revisionsToKeep)) {
+                $entityTypeManager->getStorage('node')->deleteRevision($revisionId);
+                echo PHP_EOL . "RevID: $revisionId deleted" . PHP_EOL;
+            }
+        }
+    }
+}
+// Call the function to delete older revisions for all content types.
+delete_older_revisions_for_all_types(\Drupal::entityTypeManager());
+```
+
+## How to use/run/execute
+
+Let's save the script as `node_revision_delete.php` in drupal root folder. Now you can use **drush** to run this file e.g. `./drush php:script node_revision_delete.php`
+
+---
+
+# Delete Multiple Path Aliases for Published Nodes
+
+This PHP script is designed to delete multiple path aliases for each published node in a Drupal site, leaving only the canonical alias intact. It helps in managing and cleaning up unnecessary aliases associated with nodes.
+
+## Usage
+
+1. **Ensure Proper Configuration**
+
+   Ensure that your Drupal site is properly configured and running. This script is intended to be executed within a Drupal environment.
+
+2. **Include the Script**
+
+   Copy the provided PHP script into a file within your Drupal project directory.
+
+3. **Execute the Script**
+
+   Run the script through your preferred method of executing PHP scripts. For example, you can execute it via the command line or create a custom PHP script runner within Drupal.
+
+   ```bash
+   php delete_multiple_aliases.php
+   ```
+
+4. **Review Output**
+
+   The script will iterate through each published node, load its aliases, and delete all aliases except the canonical one. Any relevant output or errors will be displayed during execution.
+
+## Important Notes
+
+- **Backup Your Database**: Before executing this script, ensure that you have a recent backup of your Drupal database. Deleting aliases is irreversible, and having a backup ensures that you can restore your data if needed.
+
+- **Customization**: You may customize the script further according to your specific requirements. For example, you can modify it to handle different conditions or to delete aliases for specific content types.
+
+## Script
+```php
+<?php
+
+use Drupal\Core\Entity\EntityTypeManagerInterface;
+
+$query = \Drupal::entityQuery('node')
+  ->condition('status', 1); // Filter by published nodes
+$nids = $query->execute();
+
+foreach ($nids as $nid) {
+  // Load the node
+  $node = \Drupal::entityTypeManager()->getStorage('node')->load($nid);
+  if ($node) {
+    // Get the canonical path of the node
+    $canonical_path = '/node/' . $nid;
+    
+    // Load all aliases for the node
+    $alias_storage = \Drupal::entityTypeManager()->getStorage('path_alias');
+    $alias_objects = $alias_storage->loadByProperties(['path' => $canonical_path]);
+
+    // Delete all aliases except the canonical one
+    $count = 0;
+    foreach ($alias_objects as $alias_object) {
+      if ($count > 0) {
+        $alias_object->delete();
+      }
+      $count++;
+    }
+  }
+}
+```
+
+## How to use/run/execute
+
+Let's save the script as `delete_alias.php` in drupal root folder. Now you can use **drush** to run this file e.g. `./drush php:script delete_alias.php`
+
+---
+
 
 ## How to install PHP 8.2, Nginx, PHP-FPM, Composer, Drush, and Drupal in linux system?
 
