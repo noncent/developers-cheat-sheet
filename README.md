@@ -943,6 +943,30 @@ tar --delete -f backup.tar.gz '/home/source/uploads'
 - `--delete`: Remove files from the archive.
 - `-f`: Specify the archive file name.
 
+18. **Extract a specific folder or directory from a Tar Archive**:
+To extract only a specific folder from a tar.gz archive, you can use the `--strip-components` option along with the `--extract` (`-x`) and `--file` (`-f`) options of the `tar` command.
+
+Here's the command:
+
+```bash
+tar -xzf your_archive.tar.gz --strip-components=1 -C /path/to/extract destination_folder_inside_archive/
+```
+
+Explanation:
+- `x`: Extract files from an archive.
+- `z`: Use gzip to decompress the archive.
+- `f`: Use the given archive file.
+- `--strip-components=1`: Remove the specified number of leading components from file names before extraction. In this case, `1` indicates to remove the root directory of the archive, effectively extracting only the contents of `destination_folder_inside_archive/`.
+- `-C /path/to/extract`: Change to the specified directory before extraction.
+- `your_archive.tar.gz`: The name of your tar.gz archive.
+- `destination_folder_inside_archive/`: The folder you want to extract from the archive.
+
+Replace `your_archive.tar.gz` with the name of your actual tar.gz archive and provide the appropriate paths for extraction and destination folder.
+
+Example:
+
+`tar -xzf www.backup.tar.gz --strip-components=1 -C /usr/local/var/www/modules modules/` command will extract a folder name modules from tar to given local path.
+
 These commands cover a range of common tasks when working with tar archives in Unix-like systems.
 
 <br/><br/>
