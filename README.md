@@ -294,6 +294,7 @@ ssl_protocols TLSv1.2 TLSv1.3;
 * Replace paths and configurations in the above examples as per your setup.
 * Do not forget to restart your nginx web server
 * Do not forget to open the cert.pen in keychain and mark them as trusted all
+* For Firefox you might need to import 'minica.pem' file open about:preferences >> search >> certificate >> View certificate >> import
 
 ## Conclusion
 
