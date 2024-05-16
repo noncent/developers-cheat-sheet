@@ -974,6 +974,20 @@ These commands cover a range of common tasks when working with tar archives in U
 
 > # Essential Linux Commands
 
+## Find the PORT and usages
+
+```bash
+In Windows, you can check which application is using port 80 by following these steps:
+netstat -ano | findstr :80
+
+In Linux/MaCOS, you can check which application is using port 80 by following these steps:
+netstat -tuln | grep :80
+sudo lsof -i :80
+
+To kill those programs:
+sudo kill <PID>
+sudo kill -9 <PID>
+```
 
 ## File and Directory Operations
 
