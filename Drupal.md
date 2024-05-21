@@ -25,7 +25,9 @@ drush sql-cli < ~/path/to/db-file.sql
 ### Import Gzip File in Drupal Database (Option 1)
 To import a gzip file into your Drupal database, you can use the following command:
 ```shell
-zcat /path/to/your/file.sql.gz | drush sql-cli
+zcat < /path/to/your/file.sql.gz | drush sql-cli
+gunzip < /path/to/your/file.sql.gz | drush sql-cli
+drush sqlq --file=/path/to/your/file.sql.gz
 ```
 
 ### Import Gzip File in Drupal Database (Option 2)
