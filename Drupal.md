@@ -153,7 +153,17 @@ This PHP script is designed to delete multiple path aliases for each published n
 use Drupal\Core\Entity\EntityTypeManagerInterface;
 
 $query = \Drupal::entityQuery('node')
-  ->condition('status', 1); // Filter by published nodes
+  // excluding offers  
+  ->condition('type', 'offers', '!=')
+  // excluding art_meetings
+  ->condition('type', 'art_meetings', '!=')
+  // excluding leela_palace_trail
+  ->condition('type', 'leela_palace_trail', '!=')
+  // excluding explore_destination
+  ->condition('type', 'explore_destination', '!=')
+  // Filter by published nodes
+  ->condition('status', 1);
+
 $nids = $query->execute();
 
 foreach ($nids as $nid) {
