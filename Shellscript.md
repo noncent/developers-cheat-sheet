@@ -144,3 +144,78 @@ And suppose `file1.txt` and `file4.txt` contain the string "www", the output wil
 ```
 
 This output indicates that `file1.txt` and `file4.txt` both contain the string "www".
+
+## loop git pull for multiple projects
+
+```bash
+#!/bin/bash
+
+# Define the root folder for Drupal installations
+ROOT_FOLDER="/var/www/html"
+
+# Declare an associative array to hold site names and their corresponding Git branches
+declare -A sites
+
+# Populate the array with site names and their corresponding branches
+sites["beta"]="master"
+sites["uat/uat-site"]="uat"
+sites["staging"]="staging"
+
+# Loop through each site and perform Git operations
+for site in "${!sites[@]}"; do
+    echo
+    echo "Running script for $site ..."
+    echo 
+
+    # Change to the site's directory
+    cd "$ROOT_FOLDER/$site" || { echo "Failed to change directory to $ROOT_FOLDER/$site"; continue; }
+
+    # Save the current Git branch
+    CURRENT_BRANCH=$(git rev-parse --abbrev-ref HEAD)
+
+    # Get the branch to pull from the associative array
+    TARGET_BRANCH=${sites[$site]}
+
+    # Fetch the latest changes from the remote repository for the target branch
+    git fetch origin $TARGET_BRANCH
+
+    # Count the number of changes between the local and remote branch
+    CHANGES=$(git rev-list HEAD..origin/$TARGET_BRANCH --count)
+
+    # If there are changes, pull the latest updates
+    if [ "$CHANGES" -gt 0 ]; then
+        # Check out the target branch
+        git checkout $TARGET_BRANCH
+
+        # Pull the latest changes from the remote branch
+        git pull origin $TARGET_BRANCH
+
+        # Check if the pull operation was successful
+        if [ $? -ne 0 ]; then
+            # If there were errors, reset the branch to the last known good state
+            git reset --hard HEAD
+
+            # Switch back to the original branch
+            git checkout $CURRENT_BRANCH
+
+            # Log the error
+            echo "Error: Failed to pull changes for $site on branch $TARGET_BRANCH. Reverted to $CURRENT_BRANCH."
+            # Continue to the next site without exiting the script
+            continue
+        fi
+
+        # If the pull was successful, switch back to the original branch
+        git checkout $CURRENT_BRANCH
+
+        # Log the success
+        echo "Successfully updated $site from branch $TARGET_BRANCH and reverted to $CURRENT_BRANCH."
+    else
+        # Log that there were no changes
+        echo "No changes for $site on branch $TARGET_BRANCH."
+    fi
+done
+
+# Set CRON to run the script in every 10 minutes on server
+# Git auto pull code for staging
+# */10 * * * * /roo/git_update_sites.sh >> /var/log/git-cron-$(date +\%Y\%m\%d).log 2>&1
+```
