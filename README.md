@@ -2,6 +2,21 @@
 
 <br/><br/>
 
+> # nginx -s reload giving error - The error message ginx: [error] invalid PID number "" in "/run/nginx.pid"
+
+```bash
+systemctl status nginx.service
+sudo lsof -i :80
+sudo systemctl stop nginx
+ps aux | grep nginx
+sudo rm /run/nginx.pid
+sudo systemctl start nginx
+sudo systemctl status nginx
+sudo nginx -t
+nginx -s reload
+```
+
+
 > # Git Pull Error - "RPC failed; curl 18 transfer closed with outstanding read data remaining" (13 April 2024)
 
 **Error Message:**
