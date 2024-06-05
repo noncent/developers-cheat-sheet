@@ -2,6 +2,40 @@
 
 <br/><br/>
 
+> # How to download read-only recordings on Teams
+
+## Prerequisites
+
+| Feature | Requirement |
+|---|---|
+| OS | macOS, Linux, Windows |
+| Library | FFmpeg (https://ffmpeg.org/download.html) |
+| Teams Video Links | Readonly |
+
+## Steps to find the video manifest URL:
+
+- Open the video in your browser and let it play.<br />
+- Access the developer toolbar by pressing the designated key (F12 for most browsers) or right-clicking and selecting "Inspect".<br />
+  
+<img width="1092" alt="image" src="https://github.com/noncent/developers-cheat-sheet/assets/1378886/83c74a34-e4f1-43d0-8eb3-f0ae2365444b">
+
+- Locate the "Network" tab and find the filter box (magnifying glass icon or search bar).<br />
+- Type "videomanifest" in the filter box to focus on video-related traffic.<br />
+  
+<img width="1092" alt="image" src="https://github.com/noncent/developers-cheat-sheet/assets/1378886/afc211bc-788e-4a92-a710-9c78706791fe">
+
+- Clear the Network panel and reload the page with the video playing.<br />
+- Look for entries containing "videomanifest" (e.g., "manifest.json", "playlist.m3u8") in the Network panel.<br />
+- Click on the relevant entry and copy the URL displayed in the details pane, usually on the right side of the developer toolbar.<br />
+  
+<img width="1091" alt="image" src="https://github.com/noncent/developers-cheat-sheet/assets/1378886/1f08f7d8-8a9e-4a23-b177-ce9af015b0cf">
+<br />
+
+```bash
+ffmpeg -i "<copy-url-here>" -codec copy "video.mp4"
+```
+
+---
 > # nginx -s reload giving error - The error message ginx: [error] invalid PID number "" in "/run/nginx.pid"
 
 ```bash
