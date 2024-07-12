@@ -2493,6 +2493,29 @@ Test your SSH connection to GitHub:
 ssh -T git@github.com
 ```
 
+```bash
+# example
+
+# Generate a new SSH key
+ssh-keygen -t rsa -b 4096 -C "your_email@example.com"
+
+# Start the SSH agent in the background
+eval "$(ssh-agent -s)"
+
+# Add your SSH private key to the SSH agent
+ssh-add -K ~/.ssh/repo_id_rsa
+
+# Copy the SSH public key to your clipboard
+pbcopy < ~/.ssh/repo_id_rsa.pub
+
+# Test your connection to Bitbucket
+ssh -T https://bitbucket.git.com/
+
+# Set the remote URL for your repository to use SSH
+git remote set-url origin ssh://git@bitbucket.git.com:7999/flf/code.in.git
+
+```
+
 You should see a message confirming your successful authentication.
 
 ### How to use?
