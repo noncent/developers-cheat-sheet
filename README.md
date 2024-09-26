@@ -642,6 +642,14 @@ Zip a folder and its subfolders:
 
 ```bash
 zip -r archivename.zip directory_name
+
+# Zip everything from current folder and exclude .DS_Store file
+# Windows
+7z a archivename.zip ./* -xr!*.DS_Store
+
+# Linux, MacOS
+zip -r archivename.zip ./* -x "*.DS_Store"
+
 ```
 
 Add multiple files and directories to the same archive:
