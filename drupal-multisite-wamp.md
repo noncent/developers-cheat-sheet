@@ -1,4 +1,4 @@
-# Drupal Multi site setup (wamp)
+# Drupal multi site setup (wamp)
 
 Windows Drupal Site Structure to host multiple websites using same drupal installation. Below are the settings provided for WAMP Server 3.3.5 64
 
