@@ -1282,6 +1282,38 @@ grep -l pattern file1.txt file2.txt
 - `pattern`: The pattern you want to search for.
 - `file1.txt file2.txt`: The files in which you want to search for the pattern. If multiple files are provided, `grep` will list only the names of files that contain a match.
 
+14. **Find string blog in all files folders and sub folders excluding a file in search**
+```bash
+grep -rnw "blog" . --exclude="redirection.locations"
+```
+
+**Breaking Down the Command:**
+
+```bash
+grep -rnw "blog" . --exclude="redirection.locations"
+```
+
+This command uses the `grep` utility to search for a specific pattern within files in a directory. Let's break down each part:
+
+**Flags:**
+
+* **-r:** Recursively searches subdirectories.
+* **-n:** Prints line numbers for each match.
+* **-w:** Matches whole words only.
+
+**Pattern:**
+
+* **"blog"**: The keyword to search for.
+
+**Directory:**
+
+* **.":** Searches the current directory and its subdirectories.
+
+**Exclusion:**
+
+* **--exclude="redirection.locations"**: Excludes the file "redirection.locations" from the search.
+
+```
 These are some common `grep` commands with different options to perform various types of pattern matching and text searching tasks in Unix-like systems.
 
 ### Here are various common usages of the `sed` command with explanations:
