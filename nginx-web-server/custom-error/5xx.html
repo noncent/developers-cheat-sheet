@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <title>Server Error</title>
+  <link rel="stylesheet" href="./error.css">
+</head>
+
+<body>
+
+  <div class="error-box">
+    <div class="error-code" id="errorCode">401</div>
+    <div class="error-message" id="errorMessage">Authorization Required</div>
+    <div class="error-description" id="errorDescription">You must log in to access this page.</div>
+  </div>
+
+  <script>
+    // You can adjust these variables dynamically
+    const errorData = {
+      code: 500,
+      message: "Server Error",
+      description: "Something went wrong on our end."
+    };
+    document.getElementById('errorCode').innerText = errorData.code;
+    document.getElementById('errorMessage').innerText = errorData.message;
+    document.getElementById('errorDescription').innerText = errorData.description;
+  </script>
+
+</body>
+
+</html>

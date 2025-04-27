@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <title>Bad Gateway</title>
+  <link rel="stylesheet" href="./error.css">
+</head>
+
+<body>
+
+  <div class="error-box">
+    <div class="error-code" id="errorCode">401</div>
+    <div class="error-message" id="errorMessage">Authorization Required</div>
+    <div class="error-description" id="errorDescription">You must log in to access this page.</div>
+  </div>
+
+  <script>
+    // You can adjust these variables dynamically
+    const errorData = {
+      code: 502,
+      message: "Bad Gateway",
+      description: "The server received an invalid response from the upstream server."
+    };
+
+    document.getElementById('errorCode').innerText = errorData.code;
+    document.getElementById('errorMessage').innerText = errorData.message;
+    document.getElementById('errorDescription').innerText = errorData.description;
+  </script>
+
+</body>
+
+</html>
