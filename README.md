@@ -594,6 +594,13 @@ FLUSH PRIVILEGES;
 -- Import the database from agzip file
 zcat ./sql.gz | mysql -h host-name -u mysql_root -p db-name
 
+-- Import the GZip file and find replace the string at the same time
+[MacOS version]
+zcat < /usr/local/var/www/backup.sql.gz | sed 's/utf8mb4_0900_ai_ci/utf8mb4_unicode_ci/g' | mysql -u user -p database-name
+
+[Linux version]
+zcat /usr/local/var/www/backup.sql.gz | sed 's/utf8mb4_0900_ai_ci/utf8mb4_unicode_ci/g' | mysql -u user -p database-name
+
 -- Import a database from sql file
 mysql -h host-name -u mysql_root -p db-name < sql.sql
 
