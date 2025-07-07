@@ -811,11 +811,11 @@ $settings['migrate_node_migrate_type_classic'] = false;
 #
 
 $databases['default']['default'] = array(
-    'database' => 'tldbbeta',
-    'username' => 'tldbuser',
-    'password' => '%^TRGGFRFGGe',
+    'database' => 'dbname',
+    'username' => 'dbuser',
+    'password' => 'password',
     'prefix' => '',
-    'host' => 'rds-stage-db1.cwvwdibe1phl.ap-south-1.rds.amazonaws.com',
+    'host' => 'db-rds.amazonaws.com',
     'port' => '3306',
     'namespace' => 'Drupal\\Core\\Database\\Driver\\mysql',
     'driver' => 'mysql',
@@ -835,10 +835,10 @@ $config['s3fs.settings']['bucket'] = 'sync-source';
 $config['s3fs.settings']['region'] = "ap-south-1";
 // Set the AWS access key for authentication with the S3 service.
 // It's recommended to use environment variables or Drupal's settings.php to securely store credentials.
-$settings['s3fs.access_key'] = 'XGXGXGXGXGXGXGXGXGXGXGXGXGXGXGX';
+$settings['s3fs.access_key'] = 'aws-s3-key';
 // Set the AWS secret key for authentication with the S3 service.
 // Ensure this key is securely stored and not hardcoded in the source code.
-$settings['s3fs.secret_key'] = 'SXSXSXSXSXSXSXSXSXSXSXSXSXSXSXSXSXSXSXSXSXSX';
+$settings['s3fs.secret_key'] = 'aws-s3-token';
 // Determine whether to upload files as private by default.
 // If set to true, files will be uploaded with private access permissions.
 $settings['s3fs.upload_as_private'] = true;
