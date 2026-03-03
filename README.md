@@ -4,7 +4,7 @@
 
 # MongoDB
 
-## Connect MongoDb (installed on AWS EC2) from local machine (remotley) using tunneling
+## Connect MongoDb (installed on AWS EC2) from local machine (remotely) using tunneling
 
 ```shell
 ssh -i ~/.ssh/ec2-key.pem -L 27017:127.0.0.1:27017 ssh-user@ec2-public-ip
