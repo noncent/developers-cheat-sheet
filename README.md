@@ -9,7 +9,8 @@
 ```shell
 ssh -i ~/.ssh/ec2-key.pem -L 27017:127.0.0.1:27017 ssh-user@ec2-public-ip
 
-# Asuming MongoDb is running locally on EC2 on port 27017, If you have installed MongoDB on your machine locally then change the port otehr wise it will conflict.
+# Asuming MongoDb is running locally on EC2 on port 27017, If you have installed MongoDB
+on your machine locally then change the port otherwise it will conflict.
 
 ssh -i ~/.ssh/ec2-key.pem -L 27018:127.0.0.1:27017 ssh-user@ec2-public-ip
 
